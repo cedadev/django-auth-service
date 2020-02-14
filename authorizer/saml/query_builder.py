@@ -38,6 +38,8 @@ class QueryBuilder(object):
         query.subject = Subject()
         query.subject.nameID = NameID()
         query.subject.nameID.format = NAMEID_FORMAT
-        query.subject.nameID.value = openid
+
+        if openid:
+            query.subject.nameID.value = openid
 
         return query
