@@ -79,7 +79,7 @@ class AuthorizeView(BaseAuthorizeView):
 
         # Check for CLI user
         authorization_header = request.META.get("HTTP_AUTHORIZATION")
-        if authorization_header:
+        if authorization_header and authorization_header.startswith("Bearer"):
 
             is_cli = True
 
