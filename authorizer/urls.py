@@ -8,10 +8,11 @@ __license__ = "BSD - see LICENSE file in top-level directory"
 
 from django.urls import path
 
-from authorizer.views import AuthorizeView, OidcAuthenticateView
+from authorizer.views import AuthorizeView, CallbackView, LoginView
 
 
 urlpatterns = [
     path("authorize/", AuthorizeView.as_view(), name="authorize"),
-    path("login/", OidcAuthenticateView.as_view(), name="login"),
+    path("login/callback/", CallbackView.as_view(), name="callback"),
+    path("login/", LoginView.as_view(), name="login")
 ]

@@ -12,10 +12,12 @@ from authlib.integrations.django_client import OAuth
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.generic import View
+from django.urls import reverse
+from django.shortcuts import redirect
 
 from authorizer.saml import SAMLAuthorizer
 from authorizer.oauth.utils import parse_access_token
-from authorizer.exceptions import BadAccessTokenError
+from authorizer.exceptions import BadAccessTokenError, SamlAuthorizationError
 
 
 LOG = logging.getLogger(__name__)
@@ -56,7 +58,7 @@ class BaseAuthorizeView(OpenIDConnectMixin, View):
 
         resource_parts = [
             settings.RESOURCE_SERVER_URI.strip("/"),
-            request.META["HTTP_X_ORIGINAL_URI"].strip("/"),
+            request.META["HTTP_X_ORIGIN_URI"].strip("/"),
         ]
         return "/".join(resource_parts)
 
@@ -74,14 +76,46 @@ class AuthorizeView(BaseAuthorizeView):
     def get(self, request):
         """ HTTP GET request handler for this view. """
 
-        openid = None
-        is_cli = False
+        openid = request.session.get("openid")
 
-        # Check for CLI user
+        if not openid:
+            # Try to retrieve openid with an access token if one is present
+            openid = self._openid_from_access_token(request)
+
+        is_authenticated = openid != None
+
+        # Construct a URI for the requested resource
+        resource = self._construct_resource_uri(request)
+        LOG.error(f"Querying authorization for resource: {resource}")
+
+        # Check authorization for resource
+        is_authorized = False
+        try:
+            # Get an authorization decision from the authorization service
+            is_authorized = self.saml_authorizer.is_authorized(
+                resource=resource,
+                openid=openid
+            )
+
+        except SamlAuthorizationError as e:
+            LOG.error(f"Authorization failed for user: {openid}")
+            raise e
+
+        if not is_authorized:
+
+            if is_authenticated:
+                return HttpResponse("Unauthorized", status=403)
+
+            return HttpResponse("Unauthenticated", status=401)
+
+        return HttpResponse("Authorized", status=200)
+
+    def _openid_from_access_token(self, request):
+        """ Checks for OAuth2 access token in the request.
+        Returns an OpenID associated with the token or None. """
+
         authorization_header = request.META.get("HTTP_AUTHORIZATION")
         if authorization_header and authorization_header.startswith("Bearer"):
-
-            is_cli = True
 
             access_token = authorization_header.strip("Bearer").strip()
             LOG.debug(f"Found access token: {access_token}")
@@ -93,42 +127,29 @@ class AuthorizeView(BaseAuthorizeView):
             except BadAccessTokenError:
                 LOG.warn("Failed to parse access token for request.")
 
-            if not user_data or "openid" not in user_data:
-                return HttpResponse("Unauthorized", status=401)
+            if user_data and "openid" in user_data:
+                return user_data["openid"]
 
-            openid = user_data["openid"]
-
-            LOG.debug(f"Parsed openid from access token: {openid}")
-
-        if not is_cli:
-
-            # TODO: OpenIDConnect auth
-            pass
-
-        # Get an authorization decision from the authorization service
-        decision = self._check_authorization(request, openid)
-        LOG.debug(f"Got decision: {decision}")
-
-        if decision != "Permit":
-            return HttpResponse("Forbidden", status=403)
-
-        return HttpResponse("Permit", status=200)
-
-    def _check_authorization(self, request, openid=None):
-        """ Queries the SAML Authorization service to determine whether or not
-        the requested resource can be accessed. """
-
-        # Construct a URI for the requested resource
-        resource = self._construct_resource_uri(request)
-
-        # Return an authorization decision
-        return self.saml_authorizer.get_decision(
-            openid=openid,
-            resource=resource
-        )
+            else:
+                LOG.debug(f"Couldn't get openid from request.")
 
 
-class OidcAuthenticateView(BaseAuthorizeView):
+class CallbackView(BaseAuthorizeView):
+    """ View for handling OpenIDConnect authentication callbacks. """
+
+    def get(self, request):
+        """ HTTP GET request handler for this view. """
+
+        token = self.oidc_client.authorize_access_token(request)
+        userinfo = self.oidc_client.parse_id_token(request, token)
+
+        if userinfo:
+            request.session["openid"] = settings.TMP_TEST_OPENID
+
+        return redirect(request.GET["next"])
+
+
+class LoginView(BaseAuthorizeView):
     """ View for handling OpenIDConnect authentication. """
 
     def get(self, request):
@@ -139,5 +160,7 @@ class OidcAuthenticateView(BaseAuthorizeView):
     def _redirect(self, request):
         """ Redirects a request to the OAuth server for authentication. """
 
-        redirect_uri = self._construct_resource_uri(request)
+        redirect_uri = request.build_absolute_uri(reverse("callback"))
+        resource_uri = request.GET.get("next")
+        redirect_uri = f"{redirect_uri}?next={resource_uri}"
         return self.oidc_client.authorize_redirect(request, redirect_uri)
