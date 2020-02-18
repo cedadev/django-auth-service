@@ -11,10 +11,11 @@ import logging
 from ndg.saml.saml2.binding.soap.client.requestbase import RequestResponseError
 from ndg.saml.saml2.binding.soap.client.authzdecisionquery import \
     AuthzDecisionQuerySslSOAPBinding
-from ndg.saml.saml2.core import AuthzDecisionQuery
+from ndg.saml.saml2.core import AuthzDecisionQuery, DecisionType
 from OpenSSL.SSL import Error as OpenSSLError
 
 from authorizer.saml.query_builder import QueryBuilder
+from authorizer.exceptions import SamlAuthorizationError
 
 
 LOG = logging.getLogger(__name__)
@@ -43,16 +44,26 @@ class SAMLAuthorizer:
 
         return decisions[0]
 
-    def get_decision(self, openid, resource):
+    def is_authorized(self, openid, resource):
         """ Get an authorization decision for a resource. """
 
         query = QueryBuilder.build_query(AuthzDecisionQuery, openid)
         query.resource = resource
 
+        decision = None
         try:
+
             response = self.client_binding.send(query, uri=self.service_uri)
-            return self._parse_authorization_response(response)
+            decision = self._parse_authorization_response(response)
 
         except (RequestResponseError, OpenSSLError) as e:
+
             LOG.error(f"Error processing SOAP query for {openid}: {e}")
-            raise e
+            raise SamlAuthorizationError("Error when querying the \
+                authorization service.")
+
+        if decision == DecisionType.INDETERMINATE:
+            raise SamlAuthorizationError("Received indeterminate decision \
+                from the authorization service.")
+
+        return decision == DecisionType.PERMIT
