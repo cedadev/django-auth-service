@@ -13,13 +13,13 @@ from django.views.generic import View
 from django.urls import reverse
 from django.shortcuts import redirect
 
-from auth.oidc.client import OpenIDConnectClient
+from authenticate.oidc.client import OpenIDConnectClient
 
 
 LOG = logging.getLogger(__name__)
 
 
-class AuthorizeView(View):
+class AuthView(View):
     """ View for authorizing an nginx_auth request.
     Response depends on the middleware used to intercept the request.
     """

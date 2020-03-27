@@ -12,7 +12,7 @@ import requests
 
 from django.conf import settings
 
-from auth.oauth2.exceptions import BadAccessTokenError
+from authenticate.oauth2.exceptions import BadAccessTokenError
 
 
 LOG = logging.getLogger(__name__)

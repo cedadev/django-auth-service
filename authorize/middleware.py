@@ -9,31 +9,13 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 import logging
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 
-from auth.saml import SAMLAuthorizer
-from auth.saml.exceptions import SamlAuthorizationError
+from authorize.saml import SAMLAuthorizer
+from authorize.saml.exceptions import SamlAuthorizationError
 
 
 LOG = logging.getLogger(__name__)
-
-
-class AuthenticationMiddleware:
-    """ Authentication middleware which relies on a request object only. """
-
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-
-        # Attempt to authenticate the request with available middleware
-        user = authenticate(request)
-        if user:
-            login(request, user)
-
-        response = self.get_response(request)
-        return response
 
 
 class SAMLAuthorizationMiddleware:

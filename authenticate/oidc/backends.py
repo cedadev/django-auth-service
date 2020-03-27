@@ -8,12 +8,12 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 
 import logging
 
-from authlib.integrations._client.errors import MismatchingStateError
+from authlib.common.errors import AuthlibBaseError
 from django.conf import settings
 from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.models import User
 
-from auth.oidc.client import OpenIDConnectClient
+from authenticate.oidc.client import OpenIDConnectClient
 
 
 LOG = logging.getLogger(__name__)
@@ -41,9 +41,9 @@ class OpenIDConnectBackend(BaseBackend):
             # TODO: get openid from user info
             request.session["openid"] = settings.TMP_TEST_OPENID
 
-        except MismatchingStateError:
+        except AuthlibBaseError as e:
 
-            LOG.warn("Failed to parse OIDC credentials for request.")
+            LOG.exception("Failed to parse OIDC credentials for request.")
             return None
 
         username = userinfo["preferred_username"]

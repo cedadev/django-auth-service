@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'auth',
+    'authenticate',
 ]
 
 MIDDLEWARE = [
@@ -33,12 +33,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'auth.middleware.AuthenticationMiddleware',
+    'authenticate.middleware.AuthenticationMiddleware',
+    'authorize.middleware.SAMLAuthorizationMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = [
-    #'auth.oauth2.backends.BearerTokenBackend',
-    'auth.oidc.backends.OpenIDConnectBackend',
+    'authenticate.oauth2.backends.BearerTokenBackend',
+    'authenticate.oidc.backends.OpenIDConnectBackend',
 ]
 
 ROOT_URLCONF = 'auth_service.urls'
