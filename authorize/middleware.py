@@ -21,7 +21,8 @@ LOG = logging.getLogger(__name__)
 class SAMLAuthorizationMiddleware:
     """ Middleware for handling authorization of authenticated requests """
 
-    RESOURCE_HEADER = "HTTP_X_ORIGIN_URI"
+    RESOURCE_QUERY_KEY = "next"
+    RESOURCE_HEADER_KEY = "HTTP_X_ORIGIN_URI"
 
     def __init__(self, get_response):
 
@@ -38,24 +39,26 @@ class SAMLAuthorizationMiddleware:
             # TODO: get openid from user object
             openid = request.session.get("openid")
 
-            is_authorized = self._is_authorized(request, openid)
+            # Construct a URI for the requested resource
+            resource = self._construct_resource_uri(request)
+            if resource:
 
-            if not is_authorized:
-                return HttpResponse("Unauthorized", status=403)
+                is_authorized = self._is_authorized(request, openid, resource)
+                if not is_authorized:
+                    return HttpResponse("Unauthorized", status=403)
 
         # If user is not authenticated or is authorized, continue
         response = self.get_response(request)
         return response
 
-    def _is_authorized(self, request, openid):
+    def _is_authorized(self, request, openid, resource):
 
-        # Construct a URI for the requested resource
-        resource = self._construct_resource_uri(request)
-        LOG.error(f"Querying authorization for resource: {resource}")
+        LOG.debug(f"Querying authorization for resource: {resource}")
 
         # Check authorization for resource
         is_authorized = False
         try:
+
             # Get an authorization decision from the authorization service
             is_authorized = self._saml_authorizer.is_authorized(
                 resource=resource,
@@ -63,7 +66,8 @@ class SAMLAuthorizationMiddleware:
             )
 
         except SamlAuthorizationError as e:
-            LOG.error(f"Authorization failed for user: {openid}")
+
+            LOG.info(f"Authorization failed for user: {openid}")
             raise e
 
         return is_authorized
@@ -72,8 +76,19 @@ class SAMLAuthorizationMiddleware:
     def _construct_resource_uri(cls, request):
         """ Constructs a URI for a requested resource. """
 
-        resource_parts = [
-            settings.RESOURCE_SERVER_URI.strip("/"),
-            request.META[cls.RESOURCE_HEADER].strip("/"),
-        ]
-        return "/".join(resource_parts)
+        resource = None
+
+        # Check for resource in the HTTP header
+        if cls.RESOURCE_HEADER_KEY in request.META:
+
+            resource_parts = [
+                settings.RESOURCE_SERVER_URI.strip("/"),
+                request.META[cls.RESOURCE_HEADER_KEY].strip("/"),
+            ]
+            resource = "/".join(resource_parts)
+
+        # Check for resource in the query string
+        elif cls.RESOURCE_QUERY_KEY in request.GET:
+            resource = request.GET[cls.RESOURCE_QUERY_KEY]
+
+        return resource
