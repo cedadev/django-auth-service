@@ -14,8 +14,8 @@ from ndg.saml.saml2.binding.soap.client.authzdecisionquery import \
 from ndg.saml.saml2.core import AuthzDecisionQuery, DecisionType
 from OpenSSL.SSL import Error as OpenSSLError
 
-from authorizer.saml.query_builder import QueryBuilder
-from authorizer.exceptions import SamlAuthorizationError
+from auth.saml.query_builder import QueryBuilder
+from auth.saml.exceptions import SamlAuthorizationError
 
 
 LOG = logging.getLogger(__name__)

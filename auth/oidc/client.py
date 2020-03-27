@@ -24,9 +24,8 @@ class OpenIDConnectClient:
         oauth.register("ceda")
         self._oidc_client = oauth.ceda
 
-    def authorize_redirect(self, request):
+    def authorize_redirect(self, request, redirect_uri):
 
-        redirect_uri = request.META.get("HTTP_REFERER")
         return self._oidc_client.authorize_redirect(request, redirect_uri)
 
     def get_user_info(self, request):

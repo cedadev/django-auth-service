@@ -25,7 +25,7 @@ class OpenIDConnectBackend(BaseBackend):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
-        self.client = OpenIDConnectClient()
+        self._client = OpenIDConnectClient()
 
     def authenticate(self, request, **kwargs):
         """ Checks for OpenID Connect login credentials in the request.
@@ -35,7 +35,7 @@ class OpenIDConnectBackend(BaseBackend):
             return None
 
         try:
-            userinfo = self.client.get_user_info(request)
+            userinfo = self._client.get_user_info(request)
 
             # Store openid in session
             # TODO: get openid from user info

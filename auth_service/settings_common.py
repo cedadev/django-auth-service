@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'authorizer',
+    'auth',
 ]
 
 MIDDLEWARE = [
@@ -33,9 +33,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auth.middleware.AuthenticationMiddleware',
 ]
 
-ROOT_URLCONF = 'authorizer_site.urls'
+AUTHENTICATION_BACKENDS = [
+    #'auth.oauth2.backends.BearerTokenBackend',
+    'auth.oidc.backends.OpenIDConnectBackend',
+]
+
+ROOT_URLCONF = 'auth_service.urls'
 
 TEMPLATES = [
     {
@@ -53,4 +59,4 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'authorizer_site.wsgi.application'
+WSGI_APPLICATION = 'auth_service.wsgi.application'

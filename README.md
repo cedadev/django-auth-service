@@ -1,4 +1,4 @@
-# Django Authorizer
+# Django Auth Service
 
 Django application for handling authorization.
 

@@ -1,4 +1,4 @@
-""" Root package for auth related modules. """
+""" Auth app package. """
 
 __author__ = "William Tucker"
 __date__ = "2020-03-25"

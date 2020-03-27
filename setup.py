@@ -14,12 +14,12 @@ with open("README.md") as readme_file:
 
 
 setup(
-    name="django-authorizer",
+    name="django-auth-service",
     version="0.0.1",
     description="Django application for handling authorization.",
     author="William Tucker",
     author_email="william.tucker@stfc.ac.uk",
-    url="https://github.com/glamod/django-authorizer",
+    url="https://github.com/glamod/django-auth-service",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     include_package_data=True,
