@@ -1,4 +1,4 @@
-""" SAML related exceptions. """
+""" SAML Authorization related exceptions. """
 
 __author__ = "William Tucker"
 __date__ = "2020-02-14"

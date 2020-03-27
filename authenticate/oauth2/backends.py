@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 
 class BearerTokenBackend(BaseBackend):
 
-    AUTHORIZATION_HEADER = "HTTP_AUTHORIZATION"
+    AUTHORIZATION_HEADER_KEY = "HTTP_AUTHORIZATION"
 
     def authenticate(self, request, **kwargs):
         """ Checks for OAuth2 access token in the request.
@@ -31,7 +31,7 @@ class BearerTokenBackend(BaseBackend):
             return None
 
         # Try to retrieve openid with an access token if one is present
-        authorization_header = request.META.get(self.AUTHORIZATION_HEADER)
+        authorization_header = request.META.get(self.AUTHORIZATION_HEADER_KEY)
         if authorization_header and authorization_header.startswith("Bearer"):
 
             access_token = authorization_header.strip("Bearer").strip()

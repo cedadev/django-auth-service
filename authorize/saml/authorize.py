@@ -63,7 +63,7 @@ class SAMLAuthorizer:
                 authorization service.")
 
         if decision == DecisionType.INDETERMINATE:
-            raise SamlAuthorizationError("Received indeterminate decision \
-                from the authorization service.")
+            raise SamlAuthorizationError("Received indeterminate decision"
+                " from the authorization service.")
 
         return decision == DecisionType.PERMIT

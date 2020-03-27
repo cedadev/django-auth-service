@@ -26,7 +26,7 @@ class AuthViewTests(TestCase):
 
         url = reverse("auth")
         HEADERS = {
-            BearerTokenBackend.AUTHORIZATION_HEADER: "bad token"
+            BearerTokenBackend.AUTHORIZATION_HEADER_KEY: "bad token"
         }
         response = self.client.get(url, extra=HEADERS)
         self.assertEqual(response.status_code, 401)
