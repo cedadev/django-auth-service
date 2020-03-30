@@ -33,25 +33,29 @@ class SAMLAuthorizationMiddleware:
 
     def __call__(self, request):
 
+        openid = None
         if request.user.is_authenticated:
 
             # Get OpenID from session
             # TODO: get openid from user object
             openid = request.session.get("openid")
 
-            # Construct a URI for the requested resource
-            resource = self._construct_resource_uri(request)
-            if resource:
+        # Construct a URI for the requested resource
+        resource = self._construct_resource_uri(request)
+        if resource:
 
-                is_authorized = self._is_authorized(request, openid, resource)
-                if not is_authorized:
-                    return HttpResponse("Unauthorized", status=403)
+            is_authorized = self._is_authorized(request, resource, openid)
+
+            # If user is logged in but cannoy access the resource then respond
+            # with a 403.
+            if request.user.is_authenticated and not is_authorized:
+                return HttpResponse("Unauthorized", status=403)
 
         # If user is not authenticated or is authorized, continue
         response = self.get_response(request)
         return response
 
-    def _is_authorized(self, request, openid, resource):
+    def _is_authorized(self, request, resource, openid=None):
 
         LOG.debug(f"Querying authorization for resource: {resource}")
 
