@@ -91,8 +91,4 @@ class SAMLAuthorizationMiddleware:
             ]
             resource = "/".join(resource_parts)
 
-        # Check for resource in the query string
-        elif cls.RESOURCE_QUERY_KEY in request.GET:
-            resource = request.GET[cls.RESOURCE_QUERY_KEY]
-
         return resource

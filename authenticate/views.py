@@ -44,6 +44,11 @@ class LoginView(View):
     def get(self, request):
         """ HTTP GET request handler for this view. """
 
+        if request.user.is_authenticated:
+            return redirect(request.GET["next"])
+
+        # TODO: Only redirect browserish user agents.
+
         return self._redirect(request)
 
     def _redirect(self, request):
