@@ -27,9 +27,6 @@ class BearerTokenBackend(BaseBackend):
         """ Checks for OAuth2 access token in the request.
         Returns User associated with the token or None. """
 
-        if request.user.is_authenticated:
-            return None
-
         # Try to retrieve openid with an access token if one is present
         authorization_header = request.META.get(self.AUTHORIZATION_HEADER_KEY)
         if authorization_header and authorization_header.startswith("Bearer"):

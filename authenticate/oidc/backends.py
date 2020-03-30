@@ -32,9 +32,6 @@ class OpenIDConnectBackend(BaseBackend):
         """ Checks for OpenID Connect login credentials in the request.
         Returns a User object or None. """
 
-        if request.user.is_authenticated:
-            return None
-
         try:
             userinfo = self._client.get_user_info(request)
 

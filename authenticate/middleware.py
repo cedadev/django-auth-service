@@ -22,10 +22,12 @@ class AuthenticationMiddleware:
 
     def __call__(self, request):
 
-        # Attempt to authenticate the request with available middleware
-        user = authenticate(request)
-        if user:
-            login(request, user)
+        if not request.user.is_authenticated:
+
+            # Attempt to authenticate the request with available middleware
+            user = authenticate(request)
+            if user:
+                login(request, user)
 
         response = self.get_response(request)
         return response
