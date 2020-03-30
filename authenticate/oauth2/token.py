@@ -27,11 +27,11 @@ def parse_access_token(access_token):
         "content-type": "application/x-www-form-urlencoded",
         "cache-control": "no-cache",
     }
-    payload = (
-        f"client_id={settings.OAUTH_CLIENT_ID}"
-        f"&client_secret={settings.OAUTH_CLIENT_SECRET}"
-        f"&token={access_token}"
-    )
+    payload = {
+        "client_id": settings.OAUTH_CLIENT_ID,
+        "client_secret": settings.OAUTH_CLIENT_SECRET,
+        "token": access_token
+    }
 
     response = requests.request(
         "POST",
