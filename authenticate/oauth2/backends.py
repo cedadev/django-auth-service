@@ -31,7 +31,7 @@ class BearerTokenBackend(BaseBackend):
         authorization_header = request.META.get(self.AUTHORIZATION_HEADER_KEY)
         if authorization_header and authorization_header.startswith("Bearer"):
 
-            access_token = authorization_header.strip("Bearer").strip()
+            access_token = authorization_header[6:].strip()
             LOG.debug(f"Found access token: {access_token}")
 
             # Attempt to retrieve OpenID from OAuth2 access token
