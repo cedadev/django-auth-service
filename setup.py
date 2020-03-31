@@ -16,7 +16,7 @@ with open("README.md") as readme_file:
 setup(
     name="django-auth-service",
     version="0.0.1",
-    description="Django application for handling authorization.",
+    description="Django application which authenticates and authorizes users.",
     author="William Tucker",
     author_email="william.tucker@stfc.ac.uk",
     url="https://github.com/glamod/django-auth-service",
@@ -34,7 +34,7 @@ setup(
     ],
     classifiers=[
         "Development Status :: 1 - Planning",
-        "Intended Audience :: Science/Research",
+        "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
