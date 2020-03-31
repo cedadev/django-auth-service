@@ -11,7 +11,7 @@ import logging
 from authlib.client.errors import MismatchingStateError
 from authlib.common.errors import AuthlibBaseError
 from django.conf import settings
-from django.contrib.auth.backends import BaseBackend
+from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
 
 from authenticate.oidc.client import OpenIDConnectClient
@@ -20,7 +20,7 @@ from authenticate.oidc.client import OpenIDConnectClient
 LOG = logging.getLogger(__name__)
 
 
-class OpenIDConnectBackend(BaseBackend):
+class OpenIDConnectBackend(ModelBackend):
     """ View for handling OpenIDConnect authentication callbacks. """
 
     def __init__(self, *args, **kwargs):
