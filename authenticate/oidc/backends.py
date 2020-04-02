@@ -40,13 +40,14 @@ class OpenIDConnectBackend(ModelBackend):
             request.session["openid"] = settings.TMP_TEST_OPENID
 
         except MismatchingStateError:
-            return None
+            pass
 
         except AuthlibBaseError as e:
 
-            LOG.exception("Failed to parse OIDC credentials for request.")
+            LOG.exception("Error parsing OIDC credentials.")
             return None
 
-        username = userinfo["preferred_username"]
-        user, _ = User.objects.get_or_create(username=username)
-        return user
+        if userinfo:
+            username = userinfo["preferred_username"]
+            user, _ = User.objects.get_or_create(username=username)
+            return user

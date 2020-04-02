@@ -72,8 +72,9 @@ OAUTH_CLIENT_SECRET = ""
 OAUTH_TOKEN_URL = ""
 OAUTH_TOKEN_INTROSPECT_URL = ""
 
+OIDC_BACKEND_CLIENT_NAME = "mybackend"
 AUTHLIB_OAUTH_CLIENTS = {
-    "ceda": {
+    OIDC_BACKEND_CLIENT_NAME: {
         "client_id": OAUTH_CLIENT_ID,
         "client_secret": OAUTH_CLIENT_SECRET,
         "authorize_url": "",
