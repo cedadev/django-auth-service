@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.urls import reverse
 from django.shortcuts import redirect
+from user_agents import parse
 
 from authenticate.oidc.client import OpenIDConnectClient
 
@@ -47,12 +48,21 @@ class LoginView(View):
         if request.user.is_authenticated:
             return redirect(request.GET["next"])
 
-        # TODO: Only redirect browserish user agents.
+        user_agent_string = request.META.get("HTTP_USER_AGENT")
+        user_agent = parse(user_agent_string)
 
-        return self._redirect(request)
+        if user_agent.browser.family == "Other":
+
+            # Unrecognised Browser, send 401 response
+            return HttpResponse("Browser not supported", status=401)
+
+        else:
+
+            # Direct user to OIDC server login
+            return self._redirect(request)
 
     def _redirect(self, request):
-        """ Redirects a request to the OAuth server for authentication. """
+        """ Redirects a request to the OIDC server for authentication. """
 
         redirect_uri = request.META.get("HTTP_REFERER")
         redirect_uri = request.build_absolute_uri(reverse("callback"))
