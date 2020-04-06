@@ -30,6 +30,9 @@ setup(
         "ndg-saml",
         "ndg-httpsclient",
         "pyopenssl",
+        "pyyaml",
+        "ua-parser",
+        "user-agents",
         "requests",
     ],
     classifiers=[
