@@ -9,7 +9,7 @@ __license__ = "BSD - see LICENSE file in top-level directory"
 from datetime import datetime
 from uuid import uuid4
 
-from ndg.saml.saml2.core import SAMLVersion, Issuer, Subject, NameID
+from ndg.saml.saml2.core import SAMLVersion, Issuer, Subject, NameID, Action
 
 
 ISSUER = '/O=STFC/OU=SPBU/CN=test'
@@ -38,6 +38,10 @@ class QueryBuilder(object):
         query.subject = Subject()
         query.subject.nameID = NameID()
         query.subject.nameID.format = NAMEID_FORMAT
+
+        action = Action()
+        action.value = Action.READ_ACTION
+        query.actions.append(action)
 
         if openid:
             query.subject.nameID.value = openid
