@@ -8,9 +8,9 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 
 import logging
 
-from django.contrib.auth import authenticate, login, get_user
-from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
+
+from authenticate.utils import is_authenticated, login
 
 
 LOG = logging.getLogger(__name__)
@@ -25,11 +25,14 @@ class AuthenticationMiddleware:
     def __call__(self, request):
 
         # Attempt to authenticate the request with available middleware
-        if not request.user.is_authenticated:
+        if not is_authenticated(request):
 
-            user = authenticate(request)
-            if user:
-                login(request, user)
+            user_identifier = self._authenticate(request)
+            if user_identifier:
+                login(request, user_identifier)
 
         response = self.get_response(request)
         return response
+
+    def _authenticate(self, request):
+        raise NotImplementedError()

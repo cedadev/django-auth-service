@@ -15,6 +15,7 @@ from django.shortcuts import redirect
 from user_agents import parse
 
 from authenticate.oidc.client import OpenIDConnectClient
+from authenticate.utils import is_authenticated
 
 
 LOG = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ class AuthView(View):
     def get(self, request):
         """ HTTP GET request handler for this view. """
 
-        if request.user.is_authenticated:
+        if is_authenticated(request):
             return HttpResponse("Authorized", status=200)
         else:
             return HttpResponse("Unauthenticated", status=401)
@@ -45,7 +46,7 @@ class LoginView(View):
     def get(self, request):
         """ HTTP GET request handler for this view. """
 
-        if request.user.is_authenticated:
+        if is_authenticated(request):
             return redirect(request.GET["next"])
 
         user_agent_string = request.META.get("HTTP_USER_AGENT")
@@ -77,5 +78,5 @@ class CallbackView(View):
     def get(self, request):
         """ HTTP GET request handler for this view. """
 
-        if request.user.is_authenticated:
+        if is_authenticated(request):
             return redirect(request.GET["next"])

@@ -16,12 +16,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
     'authenticate',
 ]
 
@@ -30,17 +25,14 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'authenticate.middleware.AuthenticationMiddleware',
+    'authenticate.oauth2.middleware.BearerTokenAuthenticationMiddleware',
+    'authenticate.oidc.middleware.OpenIDConnectAuthenticationMiddleware',
     'authorize.middleware.SAMLAuthorizationMiddleware',
 ]
 
-AUTHENTICATION_BACKENDS = [
-    'authenticate.oauth2.backends.BearerTokenBackend',
-    'authenticate.oidc.backends.OpenIDConnectBackend',
-]
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 ROOT_URLCONF = 'auth_service.urls'
 
@@ -53,7 +45,6 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },

@@ -9,9 +9,8 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 import logging
 
 from django.conf import settings
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.models import User
 
+from authenticate.middleware import AuthenticationMiddleware
 from authenticate.oauth2.token import parse_access_token
 from authenticate.oauth2.exceptions import BadAccessTokenError
 
@@ -19,11 +18,12 @@ from authenticate.oauth2.exceptions import BadAccessTokenError
 LOG = logging.getLogger(__name__)
 
 
-class BearerTokenBackend(ModelBackend):
+class BearerTokenAuthenticationMiddleware(AuthenticationMiddleware):
 
     AUTHORIZATION_HEADER_KEY = "HTTP_AUTHORIZATION"
+    TOKEN_IDENTIFIER_KEY = "username"
 
-    def authenticate(self, request, **kwargs):
+    def _authenticate(self, request):
         """ Checks for OAuth2 access token in the request.
         Returns User associated with the token or None. """
 
@@ -44,12 +44,5 @@ class BearerTokenBackend(ModelBackend):
                 LOG.warn("Failed to parse access token for request.")
                 return None
 
-            user, _ = User.objects.get_or_create(username=user_data["username"])
-
             if user_data:
-
-                # Store openid in session
-                # TODO: OpenID should be retrieved from the token
-                request.session["openid"] = settings.TMP_TEST_OPENID
-
-            return user
+                return user_data.get(self.TOKEN_IDENTIFIER_KEY)
