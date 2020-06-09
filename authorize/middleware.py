@@ -11,6 +11,7 @@ import logging
 from django.conf import settings
 from django.http import HttpResponse
 
+from authenticate.utils import is_authenticated
 from authorize.saml import SAMLAuthorizer
 from authorize.saml.exceptions import SamlAuthorizationError
 
@@ -34,7 +35,7 @@ class SAMLAuthorizationMiddleware:
     def __call__(self, request):
 
         openid = None
-        if request.user.is_authenticated:
+        if is_authenticated(request):
 
             # Get OpenID from session
             # TODO: get openid from user object
@@ -48,7 +49,7 @@ class SAMLAuthorizationMiddleware:
 
             # If user is logged in but cannoy access the resource then respond
             # with a 403.
-            if request.user.is_authenticated and not is_authorized:
+            if is_authenticated(request) and not is_authorized:
                 return HttpResponse("Unauthorized", status=403)
 
         # If user is not authenticated or is authorized, continue
