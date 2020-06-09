@@ -15,7 +15,7 @@ def is_authenticated(request):
     """
 
     user_identifier = request.session.get(USER_SESSION_KEY)
-    return user_identifier != None and user_identifier
+    return bool(user_identifier)
 
 
 def login(request, user_identifier):
