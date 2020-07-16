@@ -8,7 +8,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 
 import logging
 
-from authlib.client.errors import MismatchingStateError
+from authlib.integrations._client.errors import MismatchingStateError
 from authlib.common.errors import AuthlibBaseError
 from django.conf import settings
 
