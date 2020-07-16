@@ -11,7 +11,7 @@ import logging
 from django.conf import settings
 from django.http import HttpResponse
 
-from authenticate.utils import is_authenticated
+from authenticate.utils import is_authenticated, USER_SESSION_KEY
 from authorize.saml import SAMLAuthorizer
 from authorize.saml.exceptions import SamlAuthorizationError
 
@@ -39,7 +39,7 @@ class SAMLAuthorizationMiddleware:
 
             # Get OpenID from session
             # TODO: get openid from user object
-            openid = request.session.get("openid")
+            openid = request.session.get(USER_SESSION_KEY)
 
         # Construct a URI for the requested resource
         resource = self._construct_resource_uri(request)
