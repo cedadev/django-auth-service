@@ -29,6 +29,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'authenticate.oauth2.middleware.BearerTokenAuthenticationMiddleware',
     'authenticate.oidc.middleware.OpenIDConnectAuthenticationMiddleware',
+    'authenticate.cookie.middleware.CookieAuthenticationMiddleware',
     'authorize.middleware.SAMLAuthorizationMiddleware',
 ]
 

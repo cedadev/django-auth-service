@@ -1,4 +1,4 @@
-""" Authentication backends for OAuth2. """
+""" Middleware for encrypted cookie authentication. """
 
 __author__ = "William Tucker"
 __date__ = "2020-07-16"

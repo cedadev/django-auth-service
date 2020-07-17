@@ -1,4 +1,4 @@
-""" Authentication backends for OpenID Connect. """
+""" Authentication middleware for OpenID Connect. """
 
 __author__ = "William Tucker"
 __date__ = "2020-03-26"
@@ -10,7 +10,6 @@ import logging
 
 from authlib.integrations._client.errors import MismatchingStateError
 from authlib.common.errors import AuthlibBaseError
-from django.conf import settings
 
 from authenticate.middleware import AuthenticationMiddleware
 from authenticate.oidc.client import OpenIDConnectClient
