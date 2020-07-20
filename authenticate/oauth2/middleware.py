@@ -1,4 +1,4 @@
-""" Authentication backends for OAuth2. """
+""" Authentication middleware for OAuth2. """
 
 __author__ = "William Tucker"
 __date__ = "2020-03-25"
@@ -7,8 +7,6 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 
 
 import logging
-
-from django.conf import settings
 
 from authenticate.middleware import AuthenticationMiddleware
 from authenticate.oauth2.token import parse_access_token
