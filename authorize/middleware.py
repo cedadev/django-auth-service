@@ -45,12 +45,16 @@ class SAMLAuthorizationMiddleware:
         resource = self._construct_resource_uri(request)
         if resource:
 
-            is_authorized = self._is_authorized(request, resource, openid)
+            if not self._is_authorized(request, resource, openid):
 
-            # If user is logged in but cannoy access the resource then respond
-            # with a 403.
-            if is_authenticated(request) and not is_authorized:
-                return HttpResponse("Unauthorized", status=403)
+                if is_authenticated(request):
+                    # Logged in but cannot access the resource
+                    return HttpResponse("Unauthorized", status=403)
+                else:
+                    # Cannot access the resource but not logged in yet
+                    return HttpResponse("Unauthenticated", status=401)
+
+        LOG.debug("Request authorised")
 
         # If user is not authenticated or is authorized, continue
         response = self.get_response(request)

@@ -29,10 +29,7 @@ class AuthView(View):
     def get(self, request):
         """ HTTP GET request handler for this view. """
 
-        if is_authenticated(request):
-            return HttpResponse("Authorized", status=200)
-        else:
-            return HttpResponse("Unauthenticated", status=401)
+        return HttpResponse("Authorized", status=200)
 
 
 class LoginView(View):
