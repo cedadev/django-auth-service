@@ -15,7 +15,7 @@ with open("README.md") as readme_file:
 
 setup(
     name="django-auth-service",
-    version="0.1.0",
+    version="0.1.1",
     description="Django application which authenticates and authorizes users.",
     author="William Tucker",
     author_email="william.tucker@stfc.ac.uk",
