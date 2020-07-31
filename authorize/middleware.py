@@ -56,7 +56,6 @@ class SAMLAuthorizationMiddleware:
 
         LOG.debug("Request authorised")
 
-        # If user is not authenticated or is authorized, continue
         response = self.get_response(request)
         return response
 
