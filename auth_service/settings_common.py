@@ -30,7 +30,7 @@ MIDDLEWARE = [
     'authenticate.oauth2.middleware.BearerTokenAuthenticationMiddleware',
     'authenticate.oidc.middleware.OpenIDConnectAuthenticationMiddleware',
     'authenticate.cookie.middleware.CookieAuthenticationMiddleware',
-    'authorize.middleware.SAMLAuthorizationMiddleware',
+    'authorize.saml.middleware.SAMLAuthorizationMiddleware',
 ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
