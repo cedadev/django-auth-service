@@ -1,6 +1,53 @@
 # -*- coding: utf-8 -*-
 
-from .settings_common import * #@UnusedWildImport
+import os
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+INSTALLED_APPS = [
+    'django.contrib.sessions',
+    'authenticate',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Authentication middleware
+    #'authenticate.oauth2.middleware.BearerTokenAuthenticationMiddleware',
+    #'authenticate.oidc.middleware.OpenIDConnectAuthenticationMiddleware',
+    #'authenticate.cookie.middleware.CookieAuthenticationMiddleware',
+
+    # Authorization middleware
+    #'authorize.saml.middleware.SAMLAuthorizationMiddleware',
+    #'authorize.middleware.LoginAuthorizationMiddleware',
+]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
+ROOT_URLCONF = 'auth_service.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'auth_service.wsgi.application'
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
