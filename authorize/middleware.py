@@ -44,7 +44,7 @@ class AuthorizationMiddleware:
 
             save_resource_url(request)
 
-            if True:#not self._is_authorized(request, resource):
+            if not self._is_authorized(request, resource):
                 if is_authenticated(request):
                     # Logged in but cannot access the resource
                     return HttpResponse("Unauthorized", status=403)
@@ -57,5 +57,12 @@ class AuthorizationMiddleware:
         response = self.get_response(request)
         return response
 
-    def _is_authorized(self, request, resource, openid=None):
+    def _is_authorized(self, request, resource):
         raise NotImplementedError()
+
+
+class LoginAuthorizationMiddleware(AuthorizationMiddleware):
+    """ Simple middleware that authorizes any authenticated user. """
+
+    def _is_authorized(self, request, resource):
+        return is_authenticated(request)

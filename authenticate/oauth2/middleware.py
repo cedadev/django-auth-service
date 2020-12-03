@@ -25,7 +25,7 @@ class BearerTokenAuthenticationMiddleware(AuthenticationMiddleware):
         """ Checks for OAuth2 access token in the request.
         Returns User associated with the token or None. """
 
-        # Try to retrieve openid with an access token if one is present
+        # Try to retrieve the user id with an access token if one is present
         authorization_header = request.META.get(self.AUTHORIZATION_HEADER_KEY)
         if authorization_header and authorization_header.startswith("Bearer"):
 
