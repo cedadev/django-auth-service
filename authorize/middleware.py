@@ -10,43 +10,41 @@ import logging
 
 from django.conf import settings
 from django.http import HttpResponse
+from django.urls import resolve
 
-from authenticate.utils import is_authenticated, USER_SESSION_KEY
-from authorize.saml import SAMLAuthorizer
-from authorize.saml.exceptions import SamlAuthorizationError
+from authenticate.utils import is_authenticated, get_resource_url, \
+    save_resource_url
 
 
 LOG = logging.getLogger(__name__)
 
 
-class SAMLAuthorizationMiddleware:
+class AuthorizationMiddleware:
     """ Middleware for handling authorization of authenticated requests """
 
-    RESOURCE_QUERY_KEY = "next"
-    RESOURCE_HEADER_KEY = "HTTP_X_ORIGIN_URI"
+    EXEMPT_URLS = ["login", "callback"]
 
     def __init__(self, get_response):
-
         self.get_response = get_response
-        self._saml_authorizer = SAMLAuthorizer(
-            service_uri=settings.AUTHORIZATION_SERVICE_URL
-        )
 
     def __call__(self, request):
 
-        openid = None
-        if is_authenticated(request):
+        exempt = False
+        url_name = resolve(request.path_info).url_name
+        if url_name in self.EXEMPT_URLS:
+            exempt = True
 
-            # Get OpenID from session
-            # TODO: get openid from user object
-            openid = request.session.get(USER_SESSION_KEY)
+        if hasattr(settings, "CUSTOM_AUTHORIZATION"):
+            exempt = settings.CUSTOM_AUTHORIZATION(request)
 
         # Construct a URI for the requested resource
-        resource = self._construct_resource_uri(request)
-        if resource:
+        resource = get_resource_url(request)
 
-            if not self._is_authorized(request, resource, openid):
+        if not exempt and resource:
 
+            save_resource_url(request)
+
+            if not self._is_authorized(request, resource):
                 if is_authenticated(request):
                     # Logged in but cannot access the resource
                     return HttpResponse("Unauthorized", status=403)
@@ -54,45 +52,17 @@ class SAMLAuthorizationMiddleware:
                     # Cannot access the resource but not logged in yet
                     return HttpResponse("Unauthenticated", status=401)
 
-        LOG.debug("Request authorised")
+            LOG.debug("Request authorised")
 
         response = self.get_response(request)
         return response
 
-    def _is_authorized(self, request, resource, openid=None):
+    def _is_authorized(self, request, resource):
+        raise NotImplementedError()
 
-        LOG.debug(f"Querying authorization for resource: {resource}")
 
-        # Check authorization for resource
-        is_authorized = False
-        try:
+class LoginAuthorizationMiddleware(AuthorizationMiddleware):
+    """ Simple middleware that authorizes any authenticated user. """
 
-            # Get an authorization decision from the authorization service
-            is_authorized = self._saml_authorizer.is_authorized(
-                resource=resource,
-                openid=openid
-            )
-
-        except SamlAuthorizationError as e:
-
-            LOG.info(f"Authorization failed for user: {openid}")
-            raise e
-
-        return is_authorized
-
-    @classmethod
-    def _construct_resource_uri(cls, request):
-        """ Constructs a URI for a requested resource. """
-
-        resource = None
-
-        # Check for resource in the HTTP header
-        if cls.RESOURCE_HEADER_KEY in request.META:
-
-            resource_parts = [
-                settings.RESOURCE_SERVER_URI.strip("/"),
-                request.META[cls.RESOURCE_HEADER_KEY].strip("/"),
-            ]
-            resource = "/".join(resource_parts)
-
-        return resource
+    def _is_authorized(self, request, resource):
+        return is_authenticated(request)

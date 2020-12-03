@@ -22,7 +22,7 @@ class QueryBuilder(object):
     """ Helper class for building SAML queries. """
 
     @staticmethod
-    def build_query(query_class, openid):
+    def build_query(query_class, user_identifier=None):
         """ Builds a SAML query. """
 
         query = query_class()
@@ -43,7 +43,7 @@ class QueryBuilder(object):
         action.value = Action.READ_ACTION
         query.actions.append(action)
 
-        if openid:
-            query.subject.nameID.value = openid
+        if user_identifier:
+            query.subject.nameID.value = user_identifier
 
         return query

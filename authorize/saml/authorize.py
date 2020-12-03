@@ -44,10 +44,10 @@ class SAMLAuthorizer:
 
         return decisions[0]
 
-    def is_authorized(self, openid, resource):
+    def is_authorized(self, resource, user_identifier):
         """ Get an authorization decision for a resource. """
 
-        query = QueryBuilder.build_query(AuthzDecisionQuery, openid)
+        query = QueryBuilder.build_query(AuthzDecisionQuery, user_identifier)
         query.resource = resource
 
         decision = None
@@ -58,7 +58,7 @@ class SAMLAuthorizer:
 
         except (RequestResponseError, OpenSSLError) as e:
 
-            LOG.error(f"Error processing SOAP query for {openid}: {e}")
+            LOG.error(f"SOAP query error for {user_identifier}: {e}")
             raise SamlAuthorizationError("Error when querying the \
                 authorization service.")
 

@@ -15,7 +15,7 @@ with open("README.md") as readme_file:
 
 setup(
     name="django-auth-service",
-    version="0.1.1",
+    version="0.2.0",
     description="Django application which authenticates and authorizes users.",
     author="William Tucker",
     author_email="william.tucker@stfc.ac.uk",
@@ -37,7 +37,7 @@ setup(
         "crypto-cookie",
     ],
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",

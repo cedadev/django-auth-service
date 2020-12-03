@@ -15,7 +15,7 @@ from django.shortcuts import redirect
 from user_agents import parse
 
 from authenticate.oidc.client import OpenIDConnectClient
-from authenticate.utils import is_authenticated
+from authenticate.utils import is_authenticated, get_resource_url
 
 
 LOG = logging.getLogger(__name__)
@@ -44,7 +44,9 @@ class LoginView(View):
         """ HTTP GET request handler for this view. """
 
         if is_authenticated(request):
-            return redirect(request.GET["next"])
+
+            next_url = get_resource_url(request)
+            return redirect(next_url)
 
         user_agent_string = request.META.get("HTTP_USER_AGENT")
         user_agent = parse(user_agent_string)
@@ -62,10 +64,7 @@ class LoginView(View):
     def _redirect(self, request):
         """ Redirects a request to the OIDC server for authentication. """
 
-        redirect_uri = request.META.get("HTTP_REFERER")
         redirect_uri = request.build_absolute_uri(reverse("callback"))
-        resource_uri = request.GET.get("next")
-        redirect_uri = f"{redirect_uri}?next={resource_uri}"
         return self._client.authorize_redirect(request, redirect_uri)
 
 
@@ -75,5 +74,6 @@ class CallbackView(View):
     def get(self, request):
         """ HTTP GET request handler for this view. """
 
+        resource_url = get_resource_url(request)
         if is_authenticated(request):
-            return redirect(request.GET["next"])
+            return redirect(resource_url)
