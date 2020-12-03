@@ -22,19 +22,18 @@ LOG = logging.getLogger(__name__)
 class AuthorizationMiddleware:
     """ Middleware for handling authorization of authenticated requests """
 
-    EXEMPT_URLS = ["auth", "login", "callback"]
+    EXEMPT_URLS = ["login", "callback"]
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
 
-        #exempt = False
-        #url_name = resolve(request.path_info).url_name
-        #if url_name in self.EXEMPT_URLS:
-        #    exempt = True
-
         exempt = False
+        url_name = resolve(request.path_info).url_name
+        if url_name in self.EXEMPT_URLS:
+            exempt = True
+
         if hasattr(settings, "CUSTOM_AUTHORIZATION"):
             exempt = settings.CUSTOM_AUTHORIZATION(request)
 
