@@ -20,7 +20,7 @@ LOG = logging.getLogger(__name__)
 
 
 class AuthorizationMiddleware:
-    """ Middleware for handling authorization of authenticated requests """
+    """ Middleware for handling authorization of requests. """
 
     EXEMPT_URLS = ["login", "callback"]
 
@@ -34,8 +34,8 @@ class AuthorizationMiddleware:
         if url_name in self.EXEMPT_URLS:
             exempt = True
 
-        if hasattr(settings, "CUSTOM_AUTHORIZATION"):
-            exempt = settings.CUSTOM_AUTHORIZATION(request)
+        if hasattr(settings, "AUTHORIZATION_EXEMPT_FILTER"):
+            exempt = settings.AUTHORIZATION_EXEMPT_FILTER(request)
 
         # Construct a URI for the requested resource
         resource = get_resource_url(request)

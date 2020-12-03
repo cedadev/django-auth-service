@@ -68,7 +68,8 @@ AUTHLIB_OAUTH_CLIENTS = {
 
 # Athorization settings
 
-RESOURCE_SERVER_URI = ""
+def exempt_all(request):
+    return True
 
-ATTRIBUTE_SERVICE_URL = ""
+AUTHORIZATION_EXEMPT_FILTER = exempt_all
 AUTHORIZATION_SERVICE_URL = ""
