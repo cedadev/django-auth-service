@@ -47,7 +47,7 @@ There are two middleware classes that can be added to a Django application's `MI
 
   A simple middleware that will authorize any request that has been successfully authenticated.
 
-### Bybassing authorization based on requests
+### Bybassing authorization
 
 The `AUTHORIZATION_EXEMPT_FILTER` setting can be assigned a function used to determine whether a request is exempt from authorization. e.g.
 
