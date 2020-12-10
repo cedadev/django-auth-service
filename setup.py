@@ -19,7 +19,7 @@ setup(
     description="Django application which authenticates and authorizes users.",
     author="William Tucker",
     author_email="william.tucker@stfc.ac.uk",
-    url="https://github.com/glamod/django-auth-service",
+    url="https://github.com/cedadev/django-auth-service",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     include_package_data=True,
