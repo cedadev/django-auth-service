@@ -7,6 +7,8 @@ to authorize access to resources.
 
 ## Authentication settings
 
+One or more of these classes can be added to a Django application's `MIDDLEWARE` setting to allow for a variety of user authentication methods:
+
 - `authenticate.oauth2.middleware.BearerTokenAuthenticationMiddleware`
 
   Authenticates requests based on the presence of an [OAuth2](https://oauth.net/2/) Bearer Token.
