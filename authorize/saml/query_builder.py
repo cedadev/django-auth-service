@@ -12,10 +12,10 @@ from uuid import uuid4
 from ndg.saml.saml2.core import SAMLVersion, Issuer, Subject, NameID, Action
 
 
-ISSUER = '/O=STFC/OU=SPBU/CN=test'
-NAMEID_FORMAT = 'urn:esg:openid'
+ISSUER = "/O=STFC/OU=SPBU/CN=test"
+NAMEID_FORMAT = "urn:esg:openid"
 
-ATTRIBUTE_NAME_FORMAT = 'http://www.w3.org/2001/XMLSchema#string'
+ATTRIBUTE_NAME_FORMAT = "http://www.w3.org/2001/XMLSchema#string"
 
 
 class QueryBuilder(object):

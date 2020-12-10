@@ -54,7 +54,7 @@ class CookieAuthenticationMiddleware(AuthenticationMiddleware):
         """
 
         shared_secret = codecs.decode(
-            settings.SECURITY_SHAREDSECRET.encode(), 'base64')
+            settings.SECURITY_SHAREDSECRET.encode(), "base64")
         try:
             parsed_cookie_items = SecureCookie.parse_ticket(
                 shared_secret,

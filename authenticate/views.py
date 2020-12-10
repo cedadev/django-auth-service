@@ -1,4 +1,4 @@
-""" Views for the auth app. """
+""" Views for the authenticate app. """
 
 __author__ = "William Tucker"
 __date__ = "2020-02-05"
@@ -19,17 +19,6 @@ from authenticate.utils import is_authenticated, get_resource_url
 
 
 LOG = logging.getLogger(__name__)
-
-
-class VerifyView(View):
-    """ View for authorizing an nginx_auth request.
-    Response depends on the middleware used to intercept the request.
-    """
-
-    def get(self, request):
-        """ HTTP GET request handler for this view. """
-
-        return HttpResponse("Authorized", status=200)
 
 
 class LoginView(View):

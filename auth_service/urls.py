@@ -6,9 +6,14 @@ __copyright__ = "Copyright 2020 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 
 
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+
+from authorize.views import VerifyView
+from authenticate.views import LoginView, CallbackView
+
 
 urlpatterns = [
-    path('', include('authenticate.urls')),
+    path("verify/", VerifyView.as_view(), name="verify"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("login/callback/", CallbackView.as_view(), name="callback")
 ]
