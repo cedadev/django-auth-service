@@ -21,7 +21,7 @@ from authenticate.utils import is_authenticated, get_resource_url
 LOG = logging.getLogger(__name__)
 
 
-class AuthView(View):
+class VerifyView(View):
     """ View for authorizing an nginx_auth request.
     Response depends on the middleware used to intercept the request.
     """
@@ -48,7 +48,7 @@ class LoginView(View):
             next_url = get_resource_url(request)
             return redirect(next_url)
 
-        user_agent_string = request.META.get("HTTP_USER_AGENT")
+        user_agent_string = request.META.get("HTTP_USER_AGENT", "")
         user_agent = parse(user_agent_string)
 
         if user_agent.browser.family == "Other":
@@ -77,3 +77,6 @@ class CallbackView(View):
         resource_url = get_resource_url(request)
         if is_authenticated(request):
             return redirect(resource_url)
+
+        # Failed to authenticate on callback, return error response
+        return HttpResponse("Failed to authenticate", status=401)

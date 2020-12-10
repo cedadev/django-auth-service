@@ -40,9 +40,10 @@ class AuthorizationMiddleware:
         # Construct a URI for the requested resource
         resource = get_resource_url(request)
 
-        if not exempt and resource:
+        if not exempt:
 
-            save_resource_url(request)
+            if resource:
+                save_resource_url(request)
 
             if not self._is_authorized(request, resource):
                 if is_authenticated(request):
