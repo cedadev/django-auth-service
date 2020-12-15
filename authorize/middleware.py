@@ -22,7 +22,7 @@ LOG = logging.getLogger(__name__)
 class AuthorizationMiddleware:
     """ Middleware for handling authorization of requests. """
 
-    EXEMPT_URLS = ["login", "callback"]
+    EXEMPT_URLS = ["home", "login", "callback"]
 
     def __init__(self, get_response):
         self.get_response = get_response
