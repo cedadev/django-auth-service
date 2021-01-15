@@ -12,8 +12,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.urls import resolve
 
-from authenticate.utils import is_authenticated, get_resource_url, \
-    save_resource_url
+from authenticate.utils import is_authenticated, get_requested_resource
 
 
 LOG = logging.getLogger(__name__)
@@ -37,13 +36,10 @@ class AuthorizationMiddleware:
         if hasattr(settings, "AUTHORIZATION_EXEMPT_FILTER"):
             exempt = settings.AUTHORIZATION_EXEMPT_FILTER(request)
 
-        # Construct a URI for the requested resource
-        resource = get_resource_url(request)
-
         if not exempt:
 
-            if resource:
-                save_resource_url(request)
+            # Get the requested resource and save it
+            resource = get_requested_resource(request)
 
             if not self._is_authorized(request, resource):
                 if is_authenticated(request):

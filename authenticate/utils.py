@@ -6,11 +6,14 @@ __copyright__ = "Copyright 2020 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 
 
+from django.conf import settings
+
+
 USER_SESSION_KEY = "authenticated_user"
 
-RESOURCE_URL_QUERY_KEY = "next"
-RESOURCE_URL_HEADER_KEY = "X-Origin-URI"
-RESOURCE_URL_SESSION_KEY = "resource_url"
+DEFAULT_RESOURCE_URL_QUERY_KEY = "next"
+DEFAULT_RESOURCE_URL_HEADER_KEY = "X-Origin-URI"
+DEFAULT_RESOURCE_URL_SESSION_KEY = "resource_url"
 
 
 def login(request, user_identifier):
@@ -34,24 +37,42 @@ def is_authenticated(request):
     return bool(get_user_identifier(request))
 
 
-def get_resource_url(request):
-    """ Return the reverse-proxy-originating resource URL from the session.
+def get_requested_resource(request):
+    """ Return a reverse-proxy-originating resource URL from the request.
     """
 
-    resource_url = request.META.get(RESOURCE_URL_HEADER_KEY, None)
+    # Attempt to get the URL from the request query
+    query_key = getattr(settings, "RESOURCE_URL_QUERY_KEY",
+        DEFAULT_RESOURCE_URL_QUERY_KEY)
+    resource_url = request.GET.get(query_key, None)
+
     if not resource_url:
-        resource_url = request.GET.get(RESOURCE_URL_QUERY_KEY)
-    if not resource_url:
-        resource_url = request.session.get(RESOURCE_URL_SESSION_KEY, None)
+
+        # Attempt to get the resource URL from the request header
+        header_key = getattr(settings, "RESOURCE_URL_HEADER_KEY",
+            DEFAULT_RESOURCE_URL_HEADER_KEY)
+        resource_url = request.META.get(header_key, None)
 
     return resource_url
 
 
-def save_resource_url(request):
+def get_stored_resource(request):
+    """ Return a stored resource URL from the session.
+    """
+
+    # Attempt to get the resource URL from the session
+    session_key = getattr(settings, "RESOURCE_URL_SESSION_KEY",
+        DEFAULT_RESOURCE_URL_SESSION_KEY)
+    resource_url = request.session.get(session_key, None)
+
+    return resource_url
+
+
+def save_resource_url(request, resource_url):
     """ Save the reverse-proxy-originating resource URL.
     """
 
-    resource_url = get_resource_url(request)
-    if resource_url:
-        # Save next URL to session to be picked up by the callback
-        request.session[RESOURCE_URL_SESSION_KEY] = resource_url
+    # Save next URL to session to be picked up by the callback
+    session_key = getattr(settings, "RESOURCE_URL_SESSION_KEY",
+        DEFAULT_RESOURCE_URL_SESSION_KEY)
+    request.session[session_key] = resource_url
