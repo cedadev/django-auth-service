@@ -8,8 +8,6 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 
 import logging
 
-from django.contrib.sessions.models import Session
-
 from authenticate.utils import is_authenticated, login
 
 
