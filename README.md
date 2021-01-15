@@ -19,7 +19,7 @@ make a decision to allow or deny access to the resource.
 
 Here is an example of how to pass a resource to the verify endpoint:
 
-```sh
+```
 http://my-auth-host.example.com/verify/?next=http://my-requested-resource.example.com/
 ```
 
@@ -27,8 +27,8 @@ If this was an anonymous action, and an appropriate authentication middleware ha
 may be triggered by a 401 response from the auth service. In such a case, the next step would be to query the `/login`
 endpoint with the same resource:
 
-```sh
-http://my-auth-host.example.com/verify/?next=http://my-requested-resource.example.com/
+```
+http://my-auth-host.example.com/login/?next=http://my-requested-resource.example.com/
 ```
 
 This time, the resource URL will be stored inside the Django session during a browser login flow, to be fetched
