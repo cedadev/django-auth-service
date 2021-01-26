@@ -12,7 +12,7 @@ from django.conf import settings
 USER_SESSION_KEY = "authenticated_user"
 
 DEFAULT_RESOURCE_URL_QUERY_KEY = "next"
-DEFAULT_RESOURCE_URL_HEADER_KEY = "X-Origin-URI"
+DEFAULT_RESOURCE_URL_HEADER_KEY = "HTTP_X_ORIGIN_URI"
 DEFAULT_RESOURCE_URL_SESSION_KEY = "resource_url"
 
 
