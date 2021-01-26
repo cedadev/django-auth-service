@@ -12,7 +12,7 @@ See the below sections for details about how the app works and how it can be con
 ## Basic access control flow
 
 To verify access to a resource, the auth service app's `/verify` endpoint can be queried with a resource specified
-with the `next` query parameter or in the request header.
+with the `next` query parameter or the `X-Origin-URI` request header.
 
 Activated authorization middleware can then check this URL against whatever rules are in place on the server and
 make a decision to allow or deny access to the resource.
@@ -39,6 +39,74 @@ The following settings related to resource URL management can be adjusted to sui
 - `RESOURCE_URL_QUERY_KEY` - The URL query parameter used to set the requested resource, default `next`.
 - `RESOURCE_URL_HEADER_KEY` - If not using a URL query parameter, this request header parameter can be used to set the resource, default `X-Origin-URI`.
 - `RESOURCE_URL_SESSION_KEY` - The dictionary key used to store the resource inside the Django session during a login flow, default `resource_url`.
+
+## Using with the Nginx auth_request module
+
+For detailed information about using the auth_request module, see the [Nginx documentation page](http://nginx.org/en/docs/http/ngx_http_auth_request_module.html).
+
+Adding the Auth service's `/verify` endpoint to an Nginx server is relatively simple, assuming your auth service application is running on port `5000` of your `localhost`:
+
+```python
+# The verify endpoint gives a 200, 401 or 403 response to a request depending on authorization
+location /verify {
+    proxy_pass http://localhost:5000/verify;
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_pass_request_body off;
+}
+```
+
+Notice that we have specified the resource with the `X-Origin-URI` header, informing the auth service of the resource we are attempting to authorize access to.
+
+If authorization is not granted, and authentication is required, a `/login` endpoint can be configured similarly:
+
+```python
+# The login endpoint will authenticate a user with a configured OIDC server
+location /login {
+    set $query '';
+    if ($request_uri ~* "[^\?]+\?(.*)$") {
+        set $query $1;
+    }
+    proxy_pass http://localhost:5000/login/?next=$scheme://$http_host$http_port$request_uri;
+    proxy_pass_request_body off;
+    ...
+}
+```
+
+In this case, we are using the `next` query parameter to set the resource URL.
+
+The next thing to do is to configure some secured path on the same server to enable authorization for:
+
+```python
+# Some application serving secured data
+location /dataserver {
+    proxy_pass http://localhost:6000;
+
+    # Auth request configuration for this path
+    auth_request /verify;
+    # Extract the authenticated user's username
+    auth_request_set $username $upstream_http_x_username;
+    ...
+
+    # Unauhenticated requests are redirected to the login endpoint
+    error_page 401 = @error401;
+
+    ...
+}
+```
+
+Here we have added a simple `auth_request` call to our previously configured `/verify` endpoint. Once queried by Nginx, the request will either be allowed through (on an HTTP 200 response), or denied (401 or 403 response). Additionally, an `error_page` has been specified for 401 responses, to trigger a login.
+
+We are also using the `auth_request_set` parameter to extract an authenticated user's username and store it for other purposes. See the [relevant documentation](http://nginx.org/en/docs/http/ngx_http_auth_request_module.html) for more options.
+
+Finally, the 401 error can be configured:
+
+```python
+location @error401 {
+    return 302 /login;
+}
+```
+
+This initiates a redirect to the `/login` endpoint when a request requires authentication.
 
 ## Authentication settings
 
