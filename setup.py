@@ -35,6 +35,7 @@ setup(
         "user-agents",
         "requests",
         "crypto-cookie",
+        "OPA-python-client",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
