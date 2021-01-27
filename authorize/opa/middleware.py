@@ -33,11 +33,11 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
         user_identifier = get_user_identifier(request)
         user_groups = [] # TODO
 
-        action = None
-        if request.method == "GET":
-            action = "Read"
-        elif request.method == "POST":
-            action = "Write"
+        action_map = {
+            "GET": "Read",
+            "POST": "Write",
+        }
+        action = action_map[request.method]
 
         LOG.debug(f"Querying OPA authz server for resource: {resource}")
 
