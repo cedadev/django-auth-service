@@ -55,7 +55,7 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
         # Check authorization for resource
         is_authorized = False
         try:
-            permission = self._client.check_permission(input_data=check_data, policy_name="policies/esgf_policies_local.rego", rule_name="allow")
+            permission = self._client.check_permission(input_data=check_data, policy_name="policies/policy.rego", rule_name="allow")
             is_authorized = permission.get("result", False)
 
         except OPAAuthorizationError as e:
