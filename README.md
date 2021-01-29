@@ -49,9 +49,10 @@ Adding the Auth service's `/verify` endpoint to an Nginx server is relatively si
 ```python
 # The verify endpoint gives a 200, 401 or 403 response to a request depending on authorization
 location /verify {
-    proxy_pass http://localhost:5000/verify;
-    proxy_set_header X-Original-URI $request_uri;
+    proxy_pass http://authservice/verify;
     proxy_pass_request_body off;
+
+    proxy_set_header X-Original-URI $request_uri;
 }
 ```
 
@@ -62,13 +63,10 @@ If authorization is not granted, and authentication is required, a `/login` endp
 ```python
 # The login endpoint will authenticate a user with a configured OIDC server
 location /login {
-    set $query '';
-    if ($request_uri ~* "[^\?]+\?(.*)$") {
-        set $query $1;
-    }
-    proxy_pass http://localhost:5000/login/?next=$scheme://$http_host$http_port$request_uri;
+    proxy_pass http://authservice/login;
     proxy_pass_request_body off;
-    ...
+
+    proxy_set_header Host $host;
 }
 ```
 
@@ -79,7 +77,7 @@ The next thing to do is to configure some secured path on the same server to ena
 ```python
 # Some application serving secured data
 location /dataserver {
-    proxy_pass http://localhost:6000;
+    proxy_pass http://dataserver;
 
     # Auth request configuration for this path
     auth_request /verify;
@@ -102,7 +100,12 @@ Finally, the 401 error can be configured:
 
 ```python
 location @error401 {
-    return 302 /login;
+    set $query '';
+    if ($request_uri ~* "[^\?]+\?(.*)$") {
+        set $query $1;
+    }
+
+    return 302 /login/?next=$scheme://$http_host$http_port$request_uri;
 }
 ```
 
