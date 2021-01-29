@@ -44,7 +44,7 @@ The following settings related to resource URL management can be adjusted to sui
 
 For detailed information about using the auth_request module, see the [Nginx documentation page](http://nginx.org/en/docs/http/ngx_http_auth_request_module.html).
 
-Adding the Auth service's `/verify` endpoint to an Nginx server is relatively simple, assuming your auth service application is running on port `5000` of your `localhost`:
+Configuration for the Auth service's `/verify` endpoint might look something like this:
 
 ```python
 # The verify endpoint gives a 200, 401 or 403 response to a request depending on authorization
@@ -83,12 +83,9 @@ location /dataserver {
     auth_request /verify;
     # Extract the authenticated user's username
     auth_request_set $username $upstream_http_x_username;
-    ...
 
     # Unauhenticated requests are redirected to the login endpoint
     error_page 401 = @error401;
-
-    ...
 }
 ```
 
