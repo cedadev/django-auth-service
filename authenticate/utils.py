@@ -6,27 +6,36 @@ __copyright__ = "Copyright 2020 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 
 
+from collections import namedtuple
 from django.conf import settings
 
 
 USER_SESSION_KEY = "authenticated_user"
+USER_PROPERTIES = [
+    "username",
+    "groups",
+]
 
 DEFAULT_RESOURCE_URL_QUERY_KEY = "next"
 DEFAULT_RESOURCE_URL_HEADER_KEY = "HTTP_X_ORIGIN_URI"
 DEFAULT_RESOURCE_URL_SESSION_KEY = "resource_url"
 
 
-def login(request, user_identifier):
-    """ Stores a user's identifier in the request session. """
-
-    request.session[USER_SESSION_KEY] = user_identifier
+User = namedtuple("User", USER_PROPERTIES)
 
 
-def get_user_identifier(request):
-    """ Gets the stored user identifier from the request session. """
+def login(request, user):
+    """ Stores a user's data in the request session. """
 
-    user_identifier = request.session.get(USER_SESSION_KEY)
-    return user_identifier
+    request.session[USER_SESSION_KEY] = user._asdict()
+
+
+def get_user(request):
+    """ Gets the stored user from the request session. """
+
+    user_data = request.session.get(USER_SESSION_KEY)
+    if user_data:
+        return User(**user_data)
 
 
 def is_authenticated(request):
@@ -34,7 +43,7 @@ def is_authenticated(request):
     Returns True if authenticated.
     """
 
-    return bool(get_user_identifier(request))
+    return bool(get_user(request))
 
 
 def get_requested_resource(request):

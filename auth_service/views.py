@@ -14,4 +14,4 @@ class HomeView(View):
     """ Simple view to confirm that the server is running. """
 
     def get(self, request):
-        return HttpResponse("The auth service is running", status=200)
+        return HttpResponse("The auth service is running" + str(request.session["authenticated_user"]["groups"]), status=200)

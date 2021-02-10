@@ -19,7 +19,17 @@ LOG = logging.getLogger(__name__)
 class BearerTokenAuthenticationMiddleware(AuthenticationMiddleware):
 
     AUTHORIZATION_HEADER_KEY = "HTTP_AUTHORIZATION"
-    TOKEN_IDENTIFIER_KEY = "username"
+
+    USERNAME_KEY = "preferred_username"
+    GROUPS_KEY = "groups"
+
+    def _parse_token_data(self, token_data):
+        """ Parses an OIDC user info dictionary for relevant info. """
+
+        return {
+            "username": token_data.get(self.USERNAME_KEY),
+            "groups": token_data.get(self.GROUPS_KEY),
+        }
 
     def _authenticate(self, request):
         """ Checks for OAuth2 access token in the request.
@@ -33,14 +43,14 @@ class BearerTokenAuthenticationMiddleware(AuthenticationMiddleware):
             LOG.debug(f"Found access token: {access_token}")
 
             # Attempt to retrieve OpenID from OAuth2 access token
-            user_data = None
+            token_data = None
             try:
-                user_data = parse_access_token(access_token)
+                token_data = parse_access_token(access_token)
 
             except BadAccessTokenError:
 
-                LOG.warn("Failed to parse access token for request.")
+                LOG.warn(f"Failed to parse access token for request.")
                 return None
 
-            if user_data:
-                return user_data.get(self.TOKEN_IDENTIFIER_KEY)
+            if token_data:
+                return self._parse_token_data(token_data)
