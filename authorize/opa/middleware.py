@@ -27,6 +27,8 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
 
         opa_settings = getattr(settings, "OPA_SERVER", {})
         self._client = OpaClient(**opa_settings)
+        self._policy_name = opa_settings.get("policy_name")
+        self._rule_name = opa_settings.get("rule_name")
 
     def _is_authorized(self, request, resource):
 
@@ -58,7 +60,11 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
         # Check authorization for resource
         is_authorized = False
         try:
-            permission = self._client.check_permission(input_data=check_data, policy_name="policies/esgf_policies_local.rego", rule_name="allow")
+            permission = self._client.check_permission(
+                input_data=check_data,
+                policy_name=self._policy_name,
+                rule_name=self._rule_name
+            )
             is_authorized = permission.get("result", False)
 
         except OPAAuthorizationError as e:
