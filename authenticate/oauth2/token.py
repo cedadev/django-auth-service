@@ -44,6 +44,6 @@ def parse_access_token(access_token):
     if response.status_code == 200:
 
         if not user_data["active"]:
-            raise BadAccessTokenError
+            raise BadAccessTokenError("Inactive")
 
         return user_data

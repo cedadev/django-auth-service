@@ -13,7 +13,7 @@ from django.conf import settings
 from authorize.middleware import AuthorizationMiddleware
 from authorize.saml import SAMLAuthorizer
 from authorize.saml.exceptions import SamlAuthorizationError
-from authenticate.utils import get_user_identifier
+from authenticate.utils import get_user
 
 
 LOG = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ class SAMLAuthorizationMiddleware(AuthorizationMiddleware):
 
     def _is_authorized(self, request, resource):
 
-        user_identifier = get_user_identifier(request)
+        user = get_user(request)
 
         LOG.debug(f"Querying authorization for resource: {resource}")
 
@@ -42,12 +42,13 @@ class SAMLAuthorizationMiddleware(AuthorizationMiddleware):
             # Get an authorization decision from the authorization service
             is_authorized = self._saml_authorizer.is_authorized(
                 resource=resource,
-                user_identifier=user_identifier
+                user_identifier=user.username,
+                groups = user.groups
             )
 
         except SamlAuthorizationError as e:
 
-            LOG.info(f"Authorization failed for user: {user_identifier}")
+            LOG.info(f"Authorization failed for user: {user.username}")
             raise e
 
         return is_authorized

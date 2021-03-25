@@ -36,9 +36,9 @@ back by the `/callback` endpoint.
 
 The following settings related to resource URL management can be adjusted to suit your deployment needs:
 
-- `RESOURCE_URL_QUERY_KEY` - The URL query parameter used to set the requested resource, default `next`.
-- `RESOURCE_URL_HEADER_KEY` - If not using a URL query parameter, this request header parameter can be used to set the resource, default `X-Origin-URI`.
-- `RESOURCE_URL_SESSION_KEY` - The dictionary key used to store the resource inside the Django session during a login flow, default `resource_url`.
+- `RESOURCE_URI_QUERY_KEY` - The URL query parameter used to set the requested resource, default `next`.
+- `RESOURCE_URI_HEADER_KEY` - If not using a URL query parameter, this request header parameter can be used to set the resource, default `X-Origin-URI`.
+- `RESOURCE_URI_SESSION_KEY` - The dictionary key used to store the resource inside the Django session during a login flow, default `resource_url`.
 
 ## Using with the Nginx auth_request module
 

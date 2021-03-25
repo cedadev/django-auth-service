@@ -12,7 +12,7 @@ from django.conf import settings
 from opa_client.opa import OpaClient
 
 from authorize.middleware import AuthorizationMiddleware
-from authenticate.utils import get_user_identifier
+from authenticate.utils import get_user
 from .exceptions import OPAAuthorizationError
 
 
@@ -27,11 +27,12 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
 
         opa_settings = getattr(settings, "OPA_SERVER", {})
         self._client = OpaClient(**opa_settings)
+        self._policy_name = opa_settings.get("policy_name")
+        self._rule_name = opa_settings.get("rule_name")
 
     def _is_authorized(self, request, resource):
 
-        user_identifier = get_user_identifier(request)
-        user_groups = [] # TODO
+        user = get_user(request)
 
         action_map = {
             "GET": "Read",
@@ -41,13 +42,17 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
 
         LOG.debug(f"Querying OPA authz server for resource: {resource}")
 
+        subject = None
+        if user:
+            subject = {
+                "user": user.username,
+                "groups": user.groups
+            }
+
         check_data = {
             "input": {
                 "resource": resource,
-                "subject": {
-                    "user": user_identifier,
-                    "groups": user_groups
-                },
+                "subject": subject,
                 "action": action
             }
         }
@@ -55,12 +60,17 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
         # Check authorization for resource
         is_authorized = False
         try:
-            permission = self._client.check_permission(input_data=check_data, policy_name="policies/policy.rego", rule_name="allow")
+            permission = self._client.check_permission(
+                input_data=check_data,
+                policy_name=self._policy_name,
+                rule_name=self._rule_name
+            )
             is_authorized = permission.get("result", False)
 
         except OPAAuthorizationError as e:
 
-            LOG.info(f"Authorization failed for user: {user_identifier}")
+            username = user.username if user else "anonymous"
+            LOG.info(f"Authorization failed for user: {username}")
             raise e
 
         return is_authorized

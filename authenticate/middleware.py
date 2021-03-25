@@ -8,7 +8,7 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 
 import logging
 
-from authenticate.utils import is_authenticated, login
+from authenticate.utils import is_authenticated, login, User
 
 
 LOG = logging.getLogger(__name__)
@@ -25,9 +25,10 @@ class AuthenticationMiddleware:
         # Attempt to authenticate the request with available middleware
         if not is_authenticated(request):
 
-            user_identifier = self._authenticate(request)
-            if user_identifier:
-                login(request, user_identifier)
+            user_data = self._authenticate(request)
+            if user_data:
+                user = User(**user_data)
+                login(request, user)
 
         response = self.get_response(request)
         return response
