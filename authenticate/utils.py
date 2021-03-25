@@ -16,9 +16,9 @@ USER_PROPERTIES = [
     "groups",
 ]
 
-DEFAULT_RESOURCE_URL_QUERY_KEY = "next"
-DEFAULT_RESOURCE_URL_HEADER_KEY = "HTTP_X_ORIGIN_URI"
-DEFAULT_RESOURCE_URL_SESSION_KEY = "resource_url"
+DEFAULT_RESOURCE_URI_QUERY_KEY = "next"
+DEFAULT_RESOURCE_URI_HEADER_KEY = "HTTP_X_ORIGINAL_URI"
+DEFAULT_RESOURCE_URI_SESSION_KEY = "resource_url"
 
 
 User = namedtuple("User", USER_PROPERTIES)
@@ -51,15 +51,15 @@ def get_requested_resource(request):
     """
 
     # Attempt to get the URL from the request query
-    query_key = getattr(settings, "RESOURCE_URL_QUERY_KEY",
-        DEFAULT_RESOURCE_URL_QUERY_KEY)
+    query_key = getattr(settings, "RESOURCE_URI_QUERY_KEY",
+        DEFAULT_RESOURCE_URI_QUERY_KEY)
     resource_url = request.GET.get(query_key, None)
 
     if not resource_url:
 
         # Attempt to get the resource URL from the request header
-        header_key = getattr(settings, "RESOURCE_URL_HEADER_KEY",
-            DEFAULT_RESOURCE_URL_HEADER_KEY)
+        header_key = getattr(settings, "RESOURCE_URI_HEADER_KEY",
+            DEFAULT_RESOURCE_URI_HEADER_KEY)
         resource_url = request.META.get(header_key, None)
 
     return resource_url
@@ -70,8 +70,8 @@ def get_stored_resource(request):
     """
 
     # Attempt to get the resource URL from the session
-    session_key = getattr(settings, "RESOURCE_URL_SESSION_KEY",
-        DEFAULT_RESOURCE_URL_SESSION_KEY)
+    session_key = getattr(settings, "RESOURCE_URI_SESSION_KEY",
+        DEFAULT_RESOURCE_URI_SESSION_KEY)
     resource_url = request.session.get(session_key, None)
 
     return resource_url
@@ -82,6 +82,6 @@ def save_resource_url(request, resource_url):
     """
 
     # Save next URL to session to be picked up by the callback
-    session_key = getattr(settings, "RESOURCE_URL_SESSION_KEY",
-        DEFAULT_RESOURCE_URL_SESSION_KEY)
+    session_key = getattr(settings, "RESOURCE_URI_SESSION_KEY",
+        DEFAULT_RESOURCE_URI_SESSION_KEY)
     request.session[session_key] = resource_url
