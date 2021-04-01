@@ -6,9 +6,13 @@ __copyright__ = "Copyright 2020 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 
 
+import logging
+
 from collections import namedtuple
 from django.conf import settings
 
+
+LOG = logging.getLogger(__name__)
 
 USER_SESSION_KEY = "authenticated_user"
 USER_PROPERTIES = [
@@ -55,12 +59,18 @@ def get_requested_resource(request):
         DEFAULT_RESOURCE_URI_QUERY_KEY)
     resource_url = request.GET.get(query_key, None)
 
-    if not resource_url:
+    if resource_url:
+        LOG.debug(f"Found resource URI from query '{query_key}': '{resource_url}'")
+
+    else:
 
         # Attempt to get the resource URL from the request header
         header_key = getattr(settings, "RESOURCE_URI_HEADER_KEY",
             DEFAULT_RESOURCE_URI_HEADER_KEY)
         resource_url = request.META.get(header_key, None)
+
+        if resource_url:
+            LOG.debug(f"Found resource URI from header {header_key}: '{resource_url}'")
 
     return resource_url
 

@@ -70,6 +70,8 @@ class CallbackView(View):
         """ HTTP GET request handler for this view. """
 
         resource_url = get_stored_resource(request)
+        LOG.debug(f"Attempting redirect to resource URI '{resource_url}'")
+
         if is_authenticated(request):
             return redirect(resource_url)
 
