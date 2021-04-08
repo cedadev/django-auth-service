@@ -27,7 +27,7 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
 
         opa_settings = getattr(settings, "OPA_SERVER", {})
         self._client = OpaClient(**opa_settings)
-        self._policy_name = opa_settings.get("policy_name")
+        self._package_path = opa_settings.get("package_path")
         self._rule_name = opa_settings.get("rule_name")
 
     def _is_authorized(self, request, resource):
@@ -60,9 +60,9 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
         # Check authorization for resource
         is_authorized = False
         try:
-            permission = self._client.check_permission(
+            permission = self._client.check_policy_rule(
                 input_data=check_data,
-                policy_name=self._policy_name,
+                package_path=self._package_path,
                 rule_name=self._rule_name
             )
             is_authorized = permission.get("result", False)
