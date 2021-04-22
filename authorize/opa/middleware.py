@@ -50,11 +50,9 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
             }
 
         check_data = {
-            "input": {
-                "resource": resource,
-                "subject": subject,
-                "action": action
-            }
+            "resource": resource,
+            "subject": subject,
+            "action": action
         }
 
         # Check authorization for resource

@@ -31,7 +31,13 @@ class SAMLAuthorizationMiddleware(AuthorizationMiddleware):
 
     def _is_authorized(self, request, resource):
 
+        user_identifier = None
+        groups = []
+
         user = get_user(request)
+        if user:
+            user_identifier = user.username
+            groups = user.groups
 
         LOG.debug(f"Querying authorization for resource: {resource}")
 
@@ -42,8 +48,8 @@ class SAMLAuthorizationMiddleware(AuthorizationMiddleware):
             # Get an authorization decision from the authorization service
             is_authorized = self._saml_authorizer.is_authorized(
                 resource=resource,
-                user_identifier=user.username,
-                groups = user.groups
+                user_identifier=user_identifier,
+                groups = groups
             )
 
         except SamlAuthorizationError as e:
