@@ -75,7 +75,7 @@ class CookieAuthenticationMiddleware(AuthenticationMiddleware):
                 cookie_value = request.COOKIES[cookie_name]
                 try:
                     user_values[cookie_name] = \
-                        self._parse_cookies(cookie_value, index)
+                        self._parse_cookie(cookie_value, index)
 
                 except CookieParsingError:
 
@@ -88,7 +88,7 @@ class CookieAuthenticationMiddleware(AuthenticationMiddleware):
         if user_values[username_key]:
 
             return {
-                "username": user_values[settings.ACCOUNT_COOKIE_NAME],
+                "username": user_values[username_key],
                 "groups": [],
-                "openid": user_values[settings.OPENID_COOKIE_NAME],
+                "openid": user_values[openid_key],
             }
