@@ -54,7 +54,8 @@ class SAMLAuthorizationMiddleware(AuthorizationMiddleware):
 
         except SamlAuthorizationError as e:
 
-            LOG.info(f"Authorization failed for user: {user.username}")
+            username = user.username if user else "anonymous"
+            LOG.info(f"Authorization failed for user: {username}")
             raise e
 
         return is_authorized
