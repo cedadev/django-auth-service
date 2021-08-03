@@ -13,7 +13,6 @@ from crypto_cookie.exceptions import BadTicket
 from crypto_cookie.auth_tkt import SecureCookie
 from crypto_cookie.signature import VerificationError
 from django.conf import settings
-from six.moves.urllib import parse
 
 from authenticate.middleware import AuthenticationMiddleware
 from authenticate.cookie.exceptions import CookieParsingError
@@ -26,24 +25,31 @@ class CookieAuthenticationMiddleware(AuthenticationMiddleware):
     """ Middleware for authentication using an encrypted cookie. """
 
     USERNAME_INDEX = 1
+    OPENID_INDEX = 1
 
-    def _parse_cookie_value(self, cookie_value):
+    def _parse_cookies(self, account_cookie_value, openid_cookie_value):
         """ Parses user information from an encrypted cookie """
 
         shared_secret = codecs.decode(
             settings.SECURITY_SHAREDSECRET.encode(), "base64")
         try:
-            parsed_cookie_items = SecureCookie.parse_ticket(
+            username = SecureCookie.parse_ticket(
                 shared_secret,
-                cookie_value,
+                account_cookie_value,
                 None,
                 None
-            )
-            username = parsed_cookie_items[self.USERNAME_INDEX]
+            )[self.USERNAME_INDEX]
+            openid = SecureCookie.parse_ticket(
+                shared_secret,
+                openid_cookie_value,
+                None,
+                None
+            )[self.OPENID_INDEX]
 
             return {
                 "username": username,
                 "groups": [],
+                "openid": openid,
             }
 
         except BadTicket as e:
@@ -60,16 +66,21 @@ class CookieAuthenticationMiddleware(AuthenticationMiddleware):
         """ Checks for the presence of a valid account cookie in the request.
         Returns User associated with the token or None. """
 
-        cookie_name = settings.ACCOUNT_COOKIE_NAME
-        if cookie_name in request.COOKIES:
+        cookie_names = [
+            settings.ACCOUNT_COOKIE_NAME, settings.OPENID_COOKIE_NAME]
+        cookie_values = []
 
-            try:
-                return self._parse_cookie_value(request.COOKIES[cookie_name])
+        for cookie_name in cookie_names:
 
-            except CookieParsingError:
+            if cookie_name in request.COOKIES:
+                cookie_values.append(request.COOKIES[cookie_name])
+            else:
+                LOG.debug(f"Missing cookie '{cookie_name}'")
 
-                LOG.warning("Failed to parse cookie for request.")
-                return None
+        try:
+            return self._parse_cookies(*cookie_values)
 
-        else:
-            LOG.debug(f"Missing cookie '{cookie_name}'")
+        except CookieParsingError:
+
+            LOG.warning("Failed to parse cookie for request.")
+            return None
