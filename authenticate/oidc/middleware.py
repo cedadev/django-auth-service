@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 
 
 class OpenIDConnectAuthenticationMiddleware(AuthenticationMiddleware):
-    """ View for handling OpenIDConnect authentication callbacks. """
+    """ Middleware for OpenIDConnect authentication. """
 
     USERNAME_KEY = "preferred_username"
     GROUPS_KEY = "groups"

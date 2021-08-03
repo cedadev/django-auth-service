@@ -17,6 +17,7 @@ LOG = logging.getLogger(__name__)
 
 
 class BearerTokenAuthenticationMiddleware(AuthenticationMiddleware):
+    """ Middleware for OAuth2 Bearer Token authentication. """
 
     AUTHORIZATION_HEADER_KEY = "HTTP_AUTHORIZATION"
 
