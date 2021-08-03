@@ -27,30 +27,20 @@ class CookieAuthenticationMiddleware(AuthenticationMiddleware):
     USERNAME_INDEX = 1
     OPENID_INDEX = 1
 
-    def _parse_cookies(self, account_cookie_value, openid_cookie_value):
+    def _parse_cookie(self, cookie_value, index):
         """ Parses user information from an encrypted cookie """
 
         shared_secret = codecs.decode(
             settings.SECURITY_SHAREDSECRET.encode(), "base64")
         try:
-            username = SecureCookie.parse_ticket(
-                shared_secret,
-                account_cookie_value,
-                None,
-                None
-            )[self.USERNAME_INDEX]
-            openid = SecureCookie.parse_ticket(
-                shared_secret,
-                openid_cookie_value,
-                None,
-                None
-            )[self.OPENID_INDEX]
 
-            return {
-                "username": username,
-                "groups": [],
-                "openid": openid,
-            }
+            data = SecureCookie.parse_ticket(
+                shared_secret,
+                cookie_value,
+                None,
+                None
+            )
+            return data[index]
 
         except BadTicket as e:
             LOG.warning("Error decoding cookie.")
@@ -66,21 +56,39 @@ class CookieAuthenticationMiddleware(AuthenticationMiddleware):
         """ Checks for the presence of a valid account cookie in the request.
         Returns User associated with the token or None. """
 
-        cookie_names = [
-            settings.ACCOUNT_COOKIE_NAME, settings.OPENID_COOKIE_NAME]
-        cookie_values = []
+        username_key = settings.ACCOUNT_COOKIE_NAME
+        openid_key = settings.OPENID_COOKIE_NAME
 
-        for cookie_name in cookie_names:
+        user_values = {
+            username_key: None,
+            openid_key: None,
+        }
+
+        cookie_names = [
+            (username_key, self.USERNAME_INDEX),
+            (openid_key, self.OPENID_INDEX)
+        ]
+        for cookie_name, index in cookie_names:
 
             if cookie_name in request.COOKIES:
-                cookie_values.append(request.COOKIES[cookie_name])
+
+                cookie_value = request.COOKIES[cookie_name]
+                try:
+                    user_values[cookie_name] = \
+                        self._parse_cookies(cookie_value, index)
+
+                except CookieParsingError:
+
+                    LOG.warning("Failed to parse cookie for request.")
+                    return None
+
             else:
                 LOG.debug(f"Missing cookie '{cookie_name}'")
 
-        try:
-            return self._parse_cookies(*cookie_values)
+        if user_values[username_key]:
 
-        except CookieParsingError:
-
-            LOG.warning("Failed to parse cookie for request.")
-            return None
+            return {
+                "username": user_values[settings.ACCOUNT_COOKIE_NAME],
+                "groups": [],
+                "openid": user_values[settings.OPENID_COOKIE_NAME],
+            }
