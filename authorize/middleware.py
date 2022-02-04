@@ -33,7 +33,7 @@ class AuthorizationMiddleware:
         if url_name in self.EXEMPT_URLS:
             exempt = True
 
-        if hasattr(settings, "AUTHORIZATION_EXEMPT_FILTER"):
+        elif hasattr(settings, "AUTHORIZATION_EXEMPT_FILTER"):
             exempt = settings.AUTHORIZATION_EXEMPT_FILTER(request)
 
         if not exempt:

@@ -47,6 +47,9 @@ class SAMLAuthorizer:
     def is_authorized(self, resource, user_identifier, groups=None):
         """ Get an authorization decision for a resource. """
 
+        if not resource:
+            return True
+
         query = QueryBuilder.build_query(AuthzDecisionQuery, user_identifier)
         query.resource = resource
 
