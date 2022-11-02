@@ -63,6 +63,7 @@ def get_requested_resource(request):
         LOG.debug(f"Found resource URI from query '{query_key}': '{resource_url}'")
 
     else:
+        LOG.debug(f"No resource URI from query '{query_key}', checking headers...")
 
         # Attempt to get the resource URL from the request header
         header_key = getattr(settings, "RESOURCE_URI_HEADER_KEY",
@@ -71,6 +72,8 @@ def get_requested_resource(request):
 
         if resource_url:
             LOG.debug(f"Found resource URI from header {header_key}: '{resource_url}'")
+        else:
+            LOG.debug(f"No resource URI from header {header_key}")
 
     return resource_url
 
