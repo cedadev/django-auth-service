@@ -8,6 +8,8 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 
 import logging
 
+from django.conf import settings
+
 from authenticate.middleware import AuthenticationMiddleware
 from authenticate.oauth2.token import parse_access_token
 from authenticate.oauth2.exceptions import BadAccessTokenError
@@ -27,9 +29,17 @@ class BearerTokenAuthenticationMiddleware(AuthenticationMiddleware):
     def _parse_token_data(self, token_data):
         """ Parses an OIDC user info dictionary for relevant info. """
 
+        username_key = getattr(settings, "OAUTH2_USERNAME_KEY",
+            self.USERNAME_KEY)
+        groups_key = getattr(settings, "OAUTH2_GROUPS_KEY",
+            self.GROUPS_KEY)
+
+        LOG.debug(f"Checking token for username key '{username_key}' \
+            and groups key '{groups_key}'.")
+
         return {
-            "username": token_data.get(self.USERNAME_KEY),
-            "groups": token_data.get(self.GROUPS_KEY),
+            "username": token_data.get(username_key),
+            "groups": token_data.get(groups_key),
         }
 
     def _authenticate(self, request):
