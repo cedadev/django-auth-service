@@ -29,7 +29,7 @@ class SAMLAuthorizationMiddleware(AuthorizationMiddleware):
             service_uri=settings.AUTHORIZATION_SERVICE_URL
         )
 
-    def _is_authorized(self, request, resource):
+    def _is_authorized(self, request, resource, method=None):
 
         user_identifier = None
         groups = []

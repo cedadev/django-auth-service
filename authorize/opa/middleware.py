@@ -30,7 +30,10 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
         self._package_path = opa_settings.get("package_path")
         self._rule_name = opa_settings.get("rule_name")
 
-    def _is_authorized(self, request, resource):
+    def _is_authorized(self, request, resource, method=None):
+
+        if not method:
+            method = "GET"
 
         user = get_user(request)
 
@@ -38,7 +41,7 @@ class OPAAuthorizationMiddleware(AuthorizationMiddleware):
             "GET": "Read",
             "POST": "Write",
         }
-        action = action_map[request.method]
+        action = action_map[method]
 
         LOG.debug(f"Querying OPA authz server for resource: {resource}")
 

@@ -22,6 +22,10 @@ USER_PROPERTIES = [
 
 DEFAULT_RESOURCE_URI_QUERY_KEY = "next"
 DEFAULT_RESOURCE_URI_HEADER_KEY = "HTTP_X_ORIGINAL_URI"
+
+DEFAULT_REQUEST_METHOD_QUERY_KEY = "method"
+DEFAULT_REQUEST_METHOD_HEADER_KEY = "HTTP_X_ORIGINAL_METHOD"
+
 DEFAULT_RESOURCE_URI_SESSION_KEY = "resource_uri"
 
 
@@ -75,7 +79,9 @@ def get_requested_resource(request):
         else:
             LOG.debug(f"No resource URI from header '{header_key}'")
 
-    return resource_uri
+    request_method = "GET"
+
+    return resource_uri, request_method
 
 
 def get_stored_resource(request):
