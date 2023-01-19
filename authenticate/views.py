@@ -16,7 +16,7 @@ from user_agents import parse
 
 from authenticate.oidc.client import OpenIDConnectClient
 from authenticate.utils import is_authenticated, get_requested_resource, \
-    get_stored_resource, save_resource_url
+    get_stored_resource, save_resource
 
 
 LOG = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class LoginView(View):
 
         else:
             # Save the resource URL in the session for the login callback
-            save_resource_url(request, next_url)
+            save_resource(request, next_url)
 
         user_agent_string = request.META.get("HTTP_USER_AGENT", "")
         user_agent = parse(user_agent_string)
@@ -69,11 +69,11 @@ class CallbackView(View):
     def get(self, request):
         """ HTTP GET request handler for this view. """
 
-        resource_url = get_stored_resource(request)
-        LOG.debug(f"Attempting redirect to resource URI '{resource_url}'")
+        resource_uri = get_stored_resource(request)
+        LOG.debug(f"Attempting redirect to resource URI '{resource_uri}'")
 
         if is_authenticated(request):
-            return redirect(resource_url)
+            return redirect(resource_uri)
 
         # Failed to authenticate on callback, return error response
         return HttpResponse("Failed to authenticate", status=401)

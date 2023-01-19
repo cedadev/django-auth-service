@@ -23,7 +23,7 @@ USER_PROPERTIES = [
 
 DEFAULT_RESOURCE_URI_QUERY_KEY = "next"
 DEFAULT_RESOURCE_URI_HEADER_KEY = "HTTP_X_ORIGINAL_URI"
-DEFAULT_RESOURCE_URI_SESSION_KEY = "resource_url"
+DEFAULT_RESOURCE_URI_SESSION_KEY = "resource_uri"
 
 
 User = namedtuple("User", USER_PROPERTIES)
@@ -58,22 +58,25 @@ def get_requested_resource(request):
     # Attempt to get the URL from the request query
     query_key = getattr(settings, "RESOURCE_URI_QUERY_KEY",
         DEFAULT_RESOURCE_URI_QUERY_KEY)
-    resource_url = request.GET.get(query_key, None)
+    resource_uri = request.GET.get(query_key, None)
 
-    if resource_url:
-        LOG.debug(f"Found resource URI from query '{query_key}': '{resource_url}'")
+    if resource_uri:
+        LOG.debug(f"Found resource URI from query '{query_key}': '{resource_uri}'")
 
     else:
+        LOG.debug(f"No resource URI from query '{query_key}', checking headers...")
 
         # Attempt to get the resource URL from the request header
         header_key = getattr(settings, "RESOURCE_URI_HEADER_KEY",
             DEFAULT_RESOURCE_URI_HEADER_KEY)
-        resource_url = request.META.get(header_key, None)
+        resource_uri = request.META.get(header_key, None)
 
-        if resource_url:
-            LOG.debug(f"Found resource URI from header {header_key}: '{resource_url}'")
+        if resource_uri:
+            LOG.debug(f"Found resource URI from header '{header_key}': '{resource_uri}'")
+        else:
+            LOG.debug(f"No resource URI from header '{header_key}'")
 
-    return resource_url
+    return resource_uri
 
 
 def get_stored_resource(request):
@@ -83,16 +86,16 @@ def get_stored_resource(request):
     # Attempt to get the resource URL from the session
     session_key = getattr(settings, "RESOURCE_URI_SESSION_KEY",
         DEFAULT_RESOURCE_URI_SESSION_KEY)
-    resource_url = request.session.get(session_key, None)
+    resource_uri = request.session.get(session_key, None)
 
-    return resource_url
+    return resource_uri
 
 
-def save_resource_url(request, resource_url):
+def save_resource(request, resource_uri):
     """ Save the reverse-proxy-originating resource URL.
     """
 
     # Save next URL to session to be picked up by the callback
     session_key = getattr(settings, "RESOURCE_URI_SESSION_KEY",
         DEFAULT_RESOURCE_URI_SESSION_KEY)
-    request.session[session_key] = resource_url
+    request.session[session_key] = resource_uri

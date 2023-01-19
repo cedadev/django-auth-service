@@ -10,6 +10,7 @@ import logging
 
 from authlib.integrations.base_client.errors import MismatchingStateError
 from authlib.common.errors import AuthlibBaseError
+from django.conf import settings
 
 from authenticate.middleware import AuthenticationMiddleware
 from authenticate.oidc.client import OpenIDConnectClient
@@ -32,9 +33,17 @@ class OpenIDConnectAuthenticationMiddleware(AuthenticationMiddleware):
     def _parse_user_info(self, user_info):
         """ Parses an OIDC user info dictionary for relevant info. """
 
+        username_key = getattr(settings, "OIDC_USERNAME_KEY",
+            self.USERNAME_KEY)
+        groups_key = getattr(settings, "OIDC_GROUPS_KEY",
+            self.GROUPS_KEY)
+
+        LOG.debug(f"Checking user info for username key '{username_key}' \
+            and groups key '{groups_key}'.")
+
         return {
-            "username": user_info.get(self.USERNAME_KEY),
-            "groups": user_info.get(self.GROUPS_KEY),
+            "username": user_info.get(username_key),
+            "groups": user_info.get(groups_key),
         }
 
     def _authenticate(self, request):
