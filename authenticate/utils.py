@@ -18,6 +18,7 @@ USER_SESSION_KEY = "authenticated_user"
 USER_PROPERTIES = [
     "username",
     "groups",
+    "openid",
 ]
 
 DEFAULT_RESOURCE_URI_QUERY_KEY = "next"
