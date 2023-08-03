@@ -24,6 +24,7 @@ class OpenIDConnectAuthenticationMiddleware(AuthenticationMiddleware):
 
     USERNAME_KEY = "preferred_username"
     GROUPS_KEY = "groups"
+    OPENID_KEY = "openid"
 
     def __init__(self, *args, **kwargs):
 
@@ -37,13 +38,22 @@ class OpenIDConnectAuthenticationMiddleware(AuthenticationMiddleware):
             self.USERNAME_KEY)
         groups_key = getattr(settings, "OIDC_GROUPS_KEY",
             self.GROUPS_KEY)
+        openid_key = getattr(settings, "OAUTH2_OPENID_KEY",
+            self.OPENID_KEY)
 
-        LOG.debug(f"Checking user info for username key '{username_key}' \
-            and groups key '{groups_key}'.")
+        LOG.debug((f"Checking user info for username key '{username_key}'"
+            f", groups key '{groups_key}' and openid key '{openid_key}."))
+
+        username = user_info.get(username_key)
+        groups = user_info.get(groups_key)
+        openid = user_info.get(openid_key)
+        if not openid:
+            openid = username
 
         return {
-            "username": user_info.get(username_key),
-            "groups": user_info.get(groups_key),
+            "username": username,
+            "groups": groups,
+            "openid": openid,
         }
 
     def _authenticate(self, request):
