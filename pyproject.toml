@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "django-auth-service"
+version = "1.0.0"
+description = "Django application which authenticates and authorizes users."
+authors = ["William Tucker <william.tucker@stfc.ac.uk>"]
+license = "BSD - see LICENSE file in top-level directory"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Authlib = "^1.3.0"
+Django = "~4.2"
+ndg-saml = "^0.8.3"
+ndg-httpsclient = "^0.5.1"
+pyOpenSSL = "^24.1.0"
+PyYAML = "^6.0.1"
+ua-parser = "^0.18.0"
+user-agents = "^2.2.0"
+requests = "^2.31.0"
+crypto-cookie = "^0.3.1"
+opa-python-client = "^1.3.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
