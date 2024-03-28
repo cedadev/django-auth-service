@@ -5,6 +5,11 @@ description = "Django application which authenticates and authorizes users."
 authors = ["William Tucker <william.tucker@stfc.ac.uk>"]
 license = "BSD - see LICENSE file in top-level directory"
 readme = "README.md"
+packages = [
+    { include = "auth_service" },
+    { include = "authorize" },
+    { include = "authenticate" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
