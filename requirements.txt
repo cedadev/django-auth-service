@@ -10,6 +10,7 @@ idna==3.7
 ndg-httpsclient==0.5.1
 -e git+https://github.com/cedadev/ndg_saml.git@540186847ade854275bec4e2330ebef69a61050e#egg=ndg_saml
 opa-python-client==1.3.6
+psycopg2-binary==2.9.9
 pyasn1==0.6.0
 pycparser==2.22
 pyOpenSSL==24.2.1
