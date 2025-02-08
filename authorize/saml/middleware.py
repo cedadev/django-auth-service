@@ -36,7 +36,7 @@ class SAMLAuthorizationMiddleware(AuthorizationMiddleware):
 
         user = get_user(request)
         if user:
-            user_identifier = user.openid
+            user_identifier = user.username
             groups = user.groups
 
         LOG.debug(f"Querying authorization for resource: {resource}")
