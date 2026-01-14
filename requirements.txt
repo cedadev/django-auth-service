@@ -23,6 +23,7 @@ ndg-httpsclient==0.5.1
 -e git+https://github.com/cedadev/ndg_saml.git@540186847ade854275bec4e2330ebef69a61050e#egg=ndg_saml
 opa-python-client==2.0.3
 propcache==0.4.1
+psycopg2-binary==2.9.11
 pyasn1==0.6.1
 pycares==5.0.1
 pycparser==2.23
