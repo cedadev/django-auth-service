@@ -32,6 +32,7 @@ class SAMLAuthorizer:
 
         client_binding = AuthzDecisionQuerySslSOAPBinding()
         client_binding.clockSkewTolerance = CLOCK_SKEW_TOLERANCE
+        client_binding.ssl_no_peer_verification = True
         self.client_binding = client_binding
 
     def _parse_authorization_response(self, response):
