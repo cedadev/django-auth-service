@@ -332,19 +332,25 @@ pyasn1 = ">=0.1.1"
 PyOpenSSL = "*"
 
 [[package]]
-name = "ndg-saml"
-version = "0.8.3"
+name = "ndg_saml"
+version = "0.9.1"
 description = "SAML 2.0 implementation for the NERC DataGrid based on the Java OpenSAML library"
 optional = false
 python-versions = "*"
 groups = ["main"]
-files = [
-    {file = "ndg_saml-0.8.3.tar.gz", hash = "sha256:f68fe7c6d0cb2980ed85c39d325643c02c2c2acebbff61e1436ff7dcc449b9f2"},
-]
+files = []
+develop = false
 
 [package.extras]
-soap-binding = ["Paste", "PasteDeploy", "PasteScript", "ndg-httpsclient"]
+soap-binding = ["Paste (>=2.0.3)", "PasteDeploy (>=2.0.1)", "PasteScript (>=2.0.2)", "ndg-httpsclient"]
+test-http-server = ["gunicorn", "waitress"]
 xacml-profile = ["ndg_xacml"]
+
+[package.source]
+type = "git"
+url = "https://github.com/cedadev/ndg_saml.git"
+reference = "aabfcf2"
+resolved_reference = "aabfcf2e740892a1465d479430ac883f66b9daf2"
 
 [[package]]
 name = "opa-python-client"
@@ -685,4 +691,4 @@ ua-parser = ">=0.10.0"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "04a1a0903f80383f208c7f440c0ce65c9489383bd513dbf0e4ae508592d405c6"
+content-hash = "f660326cc500d721b76aa7e8c7c69cb17be24324c1f9638d1a6ad66c3fc95843"
