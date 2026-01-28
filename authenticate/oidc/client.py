@@ -10,7 +10,6 @@ import logging
 
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.django_client import OAuth
-from joserfc.errors import InvalidKeyIdError
 from django.conf import settings
 
 
@@ -44,5 +43,5 @@ class OpenIDConnectClient:
             token = self._oidc_client.authorize_access_token(request)
             return self._oidc_client.parse_id_token(request, token)
 
-        except (OAuthError, InvalidKeyIdError) as e:
+        except OAuthError as e:
             LOG.error(f"Failed to retrieve user info: {e}")
