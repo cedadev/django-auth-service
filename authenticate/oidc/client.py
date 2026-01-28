@@ -39,18 +39,9 @@ class OpenIDConnectClient:
 
     def get_user_info(self, request):
 
-        if self._has_state(request):
-
+        try:
             token = self._oidc_client.authorize_access_token(request)
             return self._oidc_client.parse_id_token(request, token)
 
-        else:
-            LOG.debug(f"No OIDC state found in session. \
-                Available keys:\n {request.session.keys()}")
-
-    def _has_state(self, request):
-
-        # Check for key in session indicating that some OAuth2 state exists
-        session_key = f"_{self._client_name}_authlib_state_"
-        LOG.debug(f"Checking for OIDC key in session '{session_key}'")
-        return session_key in request.session
+        except OAuthError, InvalidKeyIdError as e:
+            LOG.error(f"Failed to retrieve user info: {e}")
