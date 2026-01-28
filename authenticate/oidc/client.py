@@ -8,8 +8,9 @@ __license__ = "BSD - see LICENSE file in top-level package directory"
 
 import logging
 
-from authlib.common.errors import AuthlibBaseError
+from authlib.integrations.base_client import OAuthError
 from authlib.integrations.django_client import OAuth
+from joserfc.errors import InvalidKeyIdError
 from django.conf import settings
 
 
