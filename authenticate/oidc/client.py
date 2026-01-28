@@ -43,5 +43,5 @@ class OpenIDConnectClient:
             token = self._oidc_client.authorize_access_token(request)
             return self._oidc_client.parse_id_token(request, token)
 
-        except OAuthError, InvalidKeyIdError as e:
+        except (OAuthError, InvalidKeyIdError) as e:
             LOG.error(f"Failed to retrieve user info: {e}")
