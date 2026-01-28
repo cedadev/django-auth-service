@@ -6,9 +6,14 @@ __copyright__ = "Copyright 2020 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 
 
+import logging
+
 from authlib.common.errors import AuthlibBaseError
 from authlib.integrations.django_client import OAuth
 from django.conf import settings
+
+
+LOG = logging.getLogger(__name__)
 
 
 class OpenIDConnectClient:
@@ -38,9 +43,14 @@ class OpenIDConnectClient:
 
             token = self._oidc_client.authorize_access_token(request)
             return self._oidc_client.parse_id_token(request, token)
+W
+        else:
+            LOG.debug(f"No OIDC state found in session. \
+                Available keys:\n {request.session.keys()}")
 
     def _has_state(self, request):
 
         # Check for key in session indicating that some OAuth2 state exists
         session_key = f"_{self._client_name}_authlib_state_"
+        LOG.debug(f"Checking for OIDC key in session '{session_key}'")
         return session_key in request.session
