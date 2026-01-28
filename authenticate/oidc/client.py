@@ -43,7 +43,7 @@ class OpenIDConnectClient:
 
             token = self._oidc_client.authorize_access_token(request)
             return self._oidc_client.parse_id_token(request, token)
-W
+
         else:
             LOG.debug(f"No OIDC state found in session. \
                 Available keys:\n {request.session.keys()}")
