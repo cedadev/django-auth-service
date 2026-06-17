@@ -6,9 +6,14 @@ __copyright__ = "Copyright 2020 United Kingdom Research and Innovation"
 __license__ = "BSD - see LICENSE file in top-level package directory"
 
 
-from authlib.common.errors import AuthlibBaseError
+import logging
+
+from authlib.integrations.base_client import OAuthError
 from authlib.integrations.django_client import OAuth
 from django.conf import settings
+
+
+LOG = logging.getLogger(__name__)
 
 
 class OpenIDConnectClient:
@@ -34,13 +39,9 @@ class OpenIDConnectClient:
 
     def get_user_info(self, request):
 
-        if self._has_state(request):
-
+        try:
             token = self._oidc_client.authorize_access_token(request)
             return self._oidc_client.parse_id_token(request, token)
 
-    def _has_state(self, request):
-
-        # Check for key in session indicating that some OAuth2 state exists
-        session_key = f"_{self._client_name}_authlib_state_"
-        return session_key in request.session
+        except OAuthError as e:
+            LOG.error(f"Failed to retrieve user info: {e}")
