@@ -710,4 +710,4 @@ ua-parser = ">=0.10.0"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "f68206693d87f117ad9e72d4dd5441a167b5f589f07b043feec210d933393895"
+content-hash = "d5cb385da59f0c3da5af94409775788cf3e51577ee3a63b76f3ce0a0c33407eb"
