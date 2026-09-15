@@ -41,7 +41,10 @@ class OpenIDConnectClient:
 
         try:
             token = self._oidc_client.authorize_access_token(request)
-            return self._oidc_client.parse_id_token(request, token)
+            userinfo = token.get("userinfo")
+            if not userinfo:
+                LOG.error("User info missing from token.")
+            return userinfo
 
         except OAuthError as e:
             LOG.error(f"Failed to retrieve user info: {e}")
